@@ -21,6 +21,27 @@ function Terminal() {
   ];
 }
 
+Terminal.prototype.generateWords = function () {
+  const random   = Math.floor(Math.random() * 3);
+  let difficulty = '';
+
+  if (random === 0) {
+    difficulty = 'four';
+  } else if (random === 1) {
+    difficulty = 'six';
+  } else {
+    difficulty = 'eight';
+  }
+
+  console.info('Difficulty Setting is: ' + difficulty);
+
+  for (let i = 0; i < this._randomRangeNumber(5, 10); i++) {
+    this.words.push(_words[difficulty][this._randomRangeNumber(0, _words[difficulty].length)]);
+  }
+
+  console.info(this.words);
+};
+
 Terminal.prototype.renderPointers = function () {
   for (let i = 0; i < 15; i++) {
     document.getElementById('pointer-1').insertAdjacentHTML('beforeend', '<span>' + this.pointers[i] + '</span>');
@@ -43,6 +64,10 @@ Terminal.prototype._randomPointer = function () {
   return '0x' + hex.substring(hex.length - 4, hex.length);
 };
 
+Terminal.prototype._randomRangeNumber = function(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+};
+
 /**
  * Accessors
  */
@@ -61,3 +86,4 @@ Terminal.prototype.getSurrounders = function () {
 const terminal = new Terminal();
 terminal._generatePointers();
 terminal.renderPointers();
+terminal.generateWords();
