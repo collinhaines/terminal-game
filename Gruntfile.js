@@ -7,7 +7,8 @@ module.exports = function (grunt) {
           sourceMap: true
         },
         files: {
-          'css/bootstrap-3.3.7.min.css': 'css/bootstrap/bootstrap.less'
+          'css/bootstrap-3.3.7.min.css': 'css/bootstrap/bootstrap.less',
+          'css/terminal.min.css': 'css/terminal/terminal.less'
         }
       }
     }

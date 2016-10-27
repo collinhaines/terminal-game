@@ -21,6 +21,16 @@ function Terminal() {
   ];
 }
 
+Terminal.prototype.renderPointers = function () {
+  for (let i = 0; i < 15; i++) {
+    document.getElementById('pointer-1').insertAdjacentHTML('beforeend', '<span>' + this.pointers[i] + '</span>');
+  }
+
+  for (let i = 15; i < 30; i++) {
+    document.getElementById('pointer-2').insertAdjacentHTML('beforeend', '<span>' + this.pointers[i] + '</span>');
+  }
+};
+
 Terminal.prototype._generatePointers = function () {
   for (let i = 0; i < 30; i++) {
     this.pointers.push(this._randomPointer());
@@ -50,3 +60,4 @@ Terminal.prototype.getSurrounders = function () {
 
 const terminal = new Terminal();
 terminal._generatePointers();
+terminal.renderPointers();
