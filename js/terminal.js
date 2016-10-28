@@ -4,6 +4,7 @@
 
 function Terminal() {
   this.words    = new Array();
+  this.password = '';
   this.pointers = new Array();
 
   this.characters = [
@@ -24,6 +25,12 @@ function Terminal() {
     '(',  ')'
   ];
 }
+
+Terminal.prototype.determinePassword = function () {
+  this.password = this.words[this._randomRangeNumber(0, this.words.length)];
+
+  console.log('Password: ' + this.password);
+};
 
 Terminal.prototype.generateWords = function () {
   const random   = Math.floor(Math.random() * 3);
@@ -91,3 +98,4 @@ const terminal = new Terminal();
 terminal._generatePointers();
 terminal.renderPointers();
 terminal.generateWords();
+terminal.determinePassword();
