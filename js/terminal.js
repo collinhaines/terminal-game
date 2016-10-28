@@ -70,9 +70,7 @@ Terminal.prototype._generatePointers = function () {
 };
 
 Terminal.prototype._randomPointer = function () {
-  const hex = '1234' + Math.floor(Math.random() * 12345).toString(16).toUpperCase();
-
-  return '0x' + hex.substring(hex.length - 4, hex.length);
+  return '0x' + ('1234' + Math.floor(Math.random() * 12345).toString(16).toUpperCase()).substr(-4);
 };
 
 Terminal.prototype._randomRangeNumber = function(min, max) {
