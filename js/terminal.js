@@ -168,8 +168,8 @@ Terminal.prototype.renderWords = function () {
     // Iterate and render the possible password.
     for (let x = 0; x < this.words[i].length; x++, random++) {
       const span = 180 <= random
-        ? document.getElementsByClassName('text')[1].getElementsByTagName('span')[random - 180]
-        : document.getElementsByClassName('text')[0].getElementsByTagName('span')[random];
+        ? document.getElementById('text-2').getElementsByTagName('span')[random - 180]
+        : document.getElementById('text-1').getElementsByTagName('span')[random];
 
       span.innerText       = this.words[i][x];
       span.dataset['word'] = this.words[i];
