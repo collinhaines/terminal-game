@@ -54,17 +54,17 @@ Terminal.prototype.generateWords = function () {
 };
 
 Terminal.prototype.renderCharacters = function () {
-  this._renderCharacterLoop('text-1');
-  this._renderCharacterLoop('text-2');
+  this._renderCharacterLoop('#text-1');
+  this._renderCharacterLoop('#text-2');
 };
 
 Terminal.prototype.renderPointers = function () {
   for (let i = 0; i < 15; i++) {
-    document.getElementById('pointer-1').insertAdjacentHTML('beforeend', '<span>' + this.pointers[i] + '</span>');
+    $('#pointer-1').append('<span>' + this.pointers[i] + '</span>');
   }
 
   for (let i = 15; i < 30; i++) {
-    document.getElementById('pointer-2').insertAdjacentHTML('beforeend', '<span>' + this.pointers[i] + '</span>');
+    $('#pointer-2').append('<span>' + this.pointers[i] + '</span>');
   }
 };
 
@@ -72,39 +72,39 @@ Terminal.prototype.renderSurrounders = function () {
   // Rule #3.
   const amount = this._randomRangeNumber(1, this.words.length - 2);
 
-  console.log('A total of ' + amount + ' surrounders will be rendered.');
-
   for (let i = 0; i < amount; i++) {
     const randomSurrounder = this._randomRangeNumber(0, this.surrounders.length);
 
     // 15 rows * 2 columns = 30
     const randomRow = this._randomRangeNumber(0, 30);
 
-    const row = randomRow < 15
-      ? document.getElementById('text-1').getElementsByTagName('div')[randomRow]
-      : document.getElementById('text-2').getElementsByTagName('div')[randomRow - 15];
+    const $row = randomRow < 15
+      ? $('#text-1 > div:eq(' + randomRow + ')')
+      : $('#text-2 > div:eq(' + (randomRow - 15) + ')');
 
-    if (row.innerText.match(/[a-z]/i)) {
+    if ($row.text().match(/[a-z]/i)) {
       i--;
+
+      // TODO: Allow for surrounding characters to appear near words.
 
       continue;
     } else {
       const start = this._randomRangeNumber(0, 11);
       const stop  = this._randomRangeNumber(start + 1, 12);
 
-      console.log('Row: ' + randomRow + ', Start: ' + start + ', Stop: ' + stop);
-
       for (let x = start; x <= stop; x++) {
-        row.getElementsByTagName('span')[x].dataset['surround'] = this.surrounders[randomSurrounder];
+        const $span = $row.find('> span:eq(' + x + ')');
+
+        $span.data('surround', this.surrounders[randomSurrounder]);
 
         if (i === 0) {
-          row.getElementsByTagName('span')[x].dataset['replenishes'] = true;
+          $span.data('replenishes', true);
         }
 
         if (x === start) {
-          row.getElementsByTagName('span')[x].innerText = this.surrounders[randomSurrounder].substring(0, 1);
+          $span.text(this.surrounders[randomSurrounder].substring(0, 1));
         } else if (x === stop) {
-          row.getElementsByTagName('span')[x].innerText = this.surrounders[randomSurrounder].substring(1, 2);
+          $span.text(this.surrounders[randomSurrounder].substring(1, ));
         }
       }
     }
@@ -167,12 +167,13 @@ Terminal.prototype.renderWords = function () {
 
     // Iterate and render the possible password.
     for (let x = 0; x < this.words[i].length; x++, random++) {
-      const span = 180 <= random
-        ? document.getElementById('text-2').getElementsByTagName('span')[random - 180]
-        : document.getElementById('text-1').getElementsByTagName('span')[random];
+      const $span = 180 <= random
+        ? $('#text-2 span:eq(' + (random - 180) + ')')
+        : $('#text-1 span:eq(' + random + ')');
 
-      span.innerText       = this.words[i][x];
-      span.dataset['word'] = this.words[i];
+      $span
+        .text(this.words[i][x])
+        .data('word', this.words[i]);
     }
   }
 };
@@ -193,13 +194,13 @@ Terminal.prototype._randomRangeNumber = function(min, max) {
 
 Terminal.prototype._renderCharacterLoop = function(element) {
   for (let i = 0; i < 15; i++) {
-    let html = '<div>';
+    $(element).append('<div></div>');
 
     for (let x = 0; x < 12; x++) {
-      html += '<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>';
+      $(element)
+        .find('> div:last-child')
+        .append('<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>');
     }
-
-    document.getElementById(element).insertAdjacentHTML('beforeend', html + '</div>');
   }
 };
 

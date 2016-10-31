@@ -1,5 +1,5 @@
 # Terminal Game
-Inspired by the hacking mini-game within the latest installments of the Fallout series. Created in absolute JavaScript, no jQuery or NodeJS utilized within the game.
+Inspired by the hacking mini-game within the latest installments of the Fallout series.
 
 ## Rules
 1. Four attempts are given at the start. _No Science bobblehead, Hacker, or Close to Metal perks allowed._
