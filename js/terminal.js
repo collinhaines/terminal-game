@@ -26,6 +26,32 @@ function Terminal() {
   ];
 }
 
+Terminal.prototype.attachEventListeners = function () {
+  $('.text span')
+    .mouseover(function() {
+      let $population = $(this);
+
+      if ($(this).is('[data-surround]') && ['<', '[', '{', '('].indexOf($(this).text()) > -1) {
+        $population = $('span[data-surround="' + $(this).attr('data-surround') + '"]');
+      } else if ($(this).is('[data-word]')) {
+        $population = $('span[data-word="' + $(this).attr('data-word') + '"]');
+      }
+
+      $population.addClass('is-hover');
+    })
+    .mouseout(function() {
+      let $population = $(this);
+
+      if ($(this).is('[data-surround]')) {
+        $population = $('span[data-surround="' + $(this).attr('data-surround') + '"]');
+      } else if ($(this).is('[data-word]')) {
+        $population = $('span[data-word="' + $(this).attr('data-word') + '"]');
+      }
+
+      $population.removeClass('is-hover');
+    });
+};
+
 Terminal.prototype.determinePassword = function () {
   this.password = this.words[this._randomRangeNumber(0, this.words.length)];
 
@@ -95,10 +121,10 @@ Terminal.prototype.renderSurrounders = function () {
       for (let x = start; x <= stop; x++) {
         const $span = $row.find('> span:eq(' + x + ')');
 
-        $span.data('surround', this.surrounders[randomSurrounder]);
+        $span.attr('data-surround', i);
 
         if (i === 0) {
-          $span.data('replenishes', true);
+          $span.attr('data-replenishes', true);
         }
 
         if (x === start) {
@@ -173,7 +199,7 @@ Terminal.prototype.renderWords = function () {
 
       $span
         .text(this.words[i][x])
-        .data('word', this.words[i]);
+        .attr('data-word', this.words[i]);
     }
   }
 };
@@ -227,3 +253,4 @@ terminal.determinePassword();
 terminal.renderCharacters();
 terminal.renderWords();
 terminal.renderSurrounders();
+terminal.attachEventListeners();
