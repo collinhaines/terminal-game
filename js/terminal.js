@@ -68,6 +68,71 @@ Terminal.prototype.renderPointers = function () {
   }
 };
 
+Terminal.prototype.renderWords = function () {
+  let occupied = {};
+
+  for (let i = 0; i < this.words.length; i++) {
+    console.info('Rendering: ' + this.words[i]);
+
+    let random;
+
+    while (true) {
+      random = this._randomRangeNumber(0, 360 - this.words[i].length);
+
+      // Nothing is inside occupied on the first run through.
+      if (i === 0) {
+        occupied[random] = this.words[i].length;
+
+        break;
+      }
+
+      // Immediately try again if the same random number is generated.
+      if (occupied.hasOwnProperty(random)) {
+        continue;
+      }
+
+      let freeToGo = false;
+
+      // Determine if the number is within previously generated numbers.
+      for (let key in occupied) {
+        // Leave some character spacing between words.
+        const currentMin  = random + 1;
+        const currentMax  = random + this.words[i].length + 1;
+        const previousMin = parseInt(key, 10) - 1;
+        const previousMax = parseInt(key, 10) + parseInt(occupied[key], 10) + 1;
+
+        // Rather than checking if they current numbers are outside the range,
+        // check if the current numbers are within the range. This will assure
+        // that all previously occupied ranges are gone through.
+        if ((previousMin <= currentMin && currentMin <= previousMax) || (previousMin <= currentMax && currentMax <= previousMax)) {
+          freeToGo = false;
+
+          break;
+        } else {
+          freeToGo = true;
+        }
+      }
+
+      // https://i.imgur.com/k4YYzDZ.jpg
+      if (freeToGo) {
+        occupied[random] = this.words[i].length;
+
+        break;
+      }
+    }
+
+    // Iterate and render the possible password.
+    for (let x = 0; x < this.words[i].length; x++, random++) {
+      const span = 180 <= random
+        ? document.getElementsByClassName('text')[1].getElementsByTagName('span')[random - 180]
+        : document.getElementsByClassName('text')[0].getElementsByTagName('span')[random];
+
+      span.innerText       = this.words[i][x];
+      span.dataset['word'] = this.words[i];
+    }
+  }
+};
+
 Terminal.prototype._generatePointers = function () {
   for (let i = 0; i < 30; i++) {
     this.pointers.push(this._randomPointer());
@@ -115,3 +180,4 @@ terminal.renderPointers();
 terminal.generateWords();
 terminal.determinePassword();
 terminal.renderCharacters();
+terminal.renderWords();
