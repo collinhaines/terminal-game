@@ -19,10 +19,10 @@ function Terminal() {
   ];
 
   this.surrounders = [
-    '<',  '>',
-    '[',  ']',
-    '{',  '}',
-    '(',  ')'
+    '<>',
+    '[]',
+    '{}',
+    '()'
   ];
 }
 
@@ -68,6 +68,49 @@ Terminal.prototype.renderPointers = function () {
   }
 };
 
+Terminal.prototype.renderSurrounders = function () {
+  // Rule #3.
+  const amount = this._randomRangeNumber(1, this.words.length - 2);
+
+  console.log('A total of ' + amount + ' surrounders will be rendered.');
+
+  for (let i = 0; i < amount; i++) {
+    const randomSurrounder = this._randomRangeNumber(0, this.surrounders.length);
+
+    // 15 rows * 2 columns = 30
+    const randomRow = this._randomRangeNumber(0, 30);
+
+    const row = randomRow < 15
+      ? document.getElementById('text-1').getElementsByTagName('div')[randomRow]
+      : document.getElementById('text-2').getElementsByTagName('div')[randomRow - 15];
+
+    if (row.innerText.match(/[a-z]/i)) {
+      i--;
+
+      continue;
+    } else {
+      const start = this._randomRangeNumber(0, 11);
+      const stop  = this._randomRangeNumber(start + 1, 12);
+
+      console.log('Row: ' + randomRow + ', Start: ' + start + ', Stop: ' + stop);
+
+      for (let x = start; x <= stop; x++) {
+        row.getElementsByTagName('span')[x].dataset['surround'] = this.surrounders[randomSurrounder];
+
+        if (i === 0) {
+          row.getElementsByTagName('span')[x].dataset['replenishes'] = true;
+        }
+
+        if (x === start) {
+          row.getElementsByTagName('span')[x].innerText = this.surrounders[randomSurrounder].substring(0, 1);
+        } else if (x === stop) {
+          row.getElementsByTagName('span')[x].innerText = this.surrounders[randomSurrounder].substring(1, 2);
+        }
+      }
+    }
+  }
+};
+
 Terminal.prototype.renderWords = function () {
   let occupied = {};
 
@@ -77,6 +120,7 @@ Terminal.prototype.renderWords = function () {
     let random;
 
     while (true) {
+      // 15 rows * 12 characters * 2 columns = 360
       random = this._randomRangeNumber(0, 360 - this.words[i].length);
 
       // Nothing is inside occupied on the first run through.
@@ -181,3 +225,4 @@ terminal.generateWords();
 terminal.determinePassword();
 terminal.renderCharacters();
 terminal.renderWords();
+terminal.renderSurrounders();
