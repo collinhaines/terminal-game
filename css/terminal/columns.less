@@ -2,8 +2,35 @@
 // Columns
 // ------------------------------
 
+.column {
+  float: left;
+
+  &.pointers {
+    width: 50px;
+
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  &.text {
+    width: 250px;
+
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}
+
 .pointers {
   span {
     display: block;
+  }
+}
+
+.text {
+  span {
+    display: inline-block;
+
+    padding-left: 3px;
+    padding-right: 3px;
   }
 }

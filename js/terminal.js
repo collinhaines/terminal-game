@@ -53,6 +53,11 @@ Terminal.prototype.generateWords = function () {
   console.info(this.words);
 };
 
+Terminal.prototype.renderCharacters = function () {
+  this._renderCharacterLoop('text-1');
+  this._renderCharacterLoop('text-2');
+};
+
 Terminal.prototype.renderPointers = function () {
   for (let i = 0; i < 15; i++) {
     document.getElementById('pointer-1').insertAdjacentHTML('beforeend', '<span>' + this.pointers[i] + '</span>');
@@ -77,6 +82,18 @@ Terminal.prototype._randomRangeNumber = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
 
+Terminal.prototype._renderCharacterLoop = function(element) {
+  for (let i = 0; i < 15; i++) {
+    let html = '<div>';
+
+    for (let x = 0; x < 12; x++) {
+      html += '<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>';
+    }
+
+    document.getElementById(element).insertAdjacentHTML('beforeend', html + '</div>');
+  }
+};
+
 /**
  * Accessors
  */
@@ -97,3 +114,4 @@ terminal._generatePointers();
 terminal.renderPointers();
 terminal.generateWords();
 terminal.determinePassword();
+terminal.renderCharacters();
