@@ -3,9 +3,11 @@
  */
 
 function Terminal() {
+  this.rows    = 16;
+  this.columns = 12;
+
   this.words    = new Array();
   this.password = '';
-  this.pointers = new Array();
 
   this.characters = [
     ',',  '.',  '/',
@@ -101,12 +103,11 @@ Terminal.prototype.renderSurrounders = function () {
   for (let i = 0; i < amount; i++) {
     const randomSurrounder = this._randomRangeNumber(0, this.surrounders.length);
 
-    // 15 rows * 2 columns = 30
-    const randomRow = this._randomRangeNumber(0, 30);
+    const randomRow = this._randomRangeNumber(0, (this.rows * 2));
 
-    const $row = randomRow < 15
+    const $row = randomRow < this.rows
       ? $('#text-1 > div:eq(' + randomRow + ')')
-      : $('#text-2 > div:eq(' + (randomRow - 15) + ')');
+      : $('#text-2 > div:eq(' + (randomRow - this.rows) + ')');
 
     if ($row.text().match(/[a-z]/i)) {
       i--;
@@ -146,8 +147,7 @@ Terminal.prototype.renderWords = function () {
     let random;
 
     while (true) {
-      // 15 rows * 12 characters * 2 columns = 360
-      random = this._randomRangeNumber(0, 360 - this.words[i].length);
+      random = this._randomRangeNumber(0, (this.rows * this.columns * 2) - this.words[i].length);
 
       // Nothing is inside occupied on the first run through.
       if (i === 0) {
@@ -219,7 +219,7 @@ Terminal.prototype._randomRangeNumber = function(min, max) {
 };
 
 Terminal.prototype._renderCharacterLoop = function(element) {
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < this.rows; i++) {
     $(element).append('<div></div>');
 
     for (let x = 0; x < 12; x++) {
