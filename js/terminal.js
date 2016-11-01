@@ -87,12 +87,20 @@ Terminal.prototype.renderCharacters = function () {
 };
 
 Terminal.prototype.renderPointers = function () {
-  for (let i = 0; i < 15; i++) {
-    $('#pointer-1').append('<span>' + this.pointers[i] + '</span>');
+ // Generate pointers
+  let pointers = new Array();
+
+  for (let i = 0; i < (this.rows * 2); i++) {
+    pointers.push('0x' + ('1234' + Math.floor(Math.random() * 12345).toString(16).toUpperCase()).substr(-4));
   }
 
-  for (let i = 15; i < 30; i++) {
-    $('#pointer-2').append('<span>' + this.pointers[i] + '</span>');
+  // Render pointers.
+  for (let i = 0; i < (this.rows * 2); i++) {
+    if (i < this.rows) {
+      $('#pointer-1').append('<span>' + pointers[i] + '</span>');
+    } else {
+      $('#pointer-2').append('<span>' + pointers[i] + '</span>');
+    }
   }
 };
 
@@ -204,16 +212,6 @@ Terminal.prototype.renderWords = function () {
   }
 };
 
-Terminal.prototype._generatePointers = function () {
-  for (let i = 0; i < 30; i++) {
-    this.pointers.push(this._randomPointer());
-  }
-};
-
-Terminal.prototype._randomPointer = function () {
-  return '0x' + ('1234' + Math.floor(Math.random() * 12345).toString(16).toUpperCase()).substr(-4);
-};
-
 Terminal.prototype._randomRangeNumber = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
@@ -237,16 +235,11 @@ Terminal.prototype.getCharacters = function () {
   return this.characters;
 };
 
-Terminal.prototype.getPointers = function () {
-  return this.pointers;
-};
-
 Terminal.prototype.getSurrounders = function () {
   return this.surrounders;
 };
 
 const terminal = new Terminal();
-terminal._generatePointers();
 terminal.renderPointers();
 terminal.generateWords();
 terminal.determinePassword();
