@@ -124,8 +124,8 @@ Terminal.prototype.renderSurrounders = function () {
 
       continue;
     } else {
-      const start = this._randomRangeNumber(0, 11);
-      const stop  = this._randomRangeNumber(start + 1, 12);
+      const start = this._randomRangeNumber(0, this.columns - 1);
+      const stop  = this._randomRangeNumber(start + 1, this.columns);
 
       for (let x = start; x <= stop; x++) {
         const $span = $row.find('> span:eq(' + x + ')');
@@ -201,8 +201,8 @@ Terminal.prototype.renderWords = function () {
 
     // Iterate and render the possible password.
     for (let x = 0; x < this.words[i].length; x++, random++) {
-      const $span = 180 <= random
-        ? $('#text-2 span:eq(' + (random - 180) + ')')
+      const $span = (this.rows * this.columns) <= random
+        ? $('#text-2 span:eq(' + (random - (this.rows * this.columns)) + ')')
         : $('#text-1 span:eq(' + random + ')');
 
       $span
@@ -220,7 +220,7 @@ Terminal.prototype._renderCharacterLoop = function(element) {
   for (let i = 0; i < this.rows; i++) {
     $(element).append('<div></div>');
 
-    for (let x = 0; x < 12; x++) {
+    for (let x = 0; x < this.columns; x++) {
       $(element)
         .find('> div:last-child')
         .append('<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>');
