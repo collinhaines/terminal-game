@@ -6,17 +6,20 @@
   float: left;
 
   &.pointers {
-    width: 50px;
+    width: 65px;
 
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-right: 8px;
+
+    &:not(:first-child) {
+      margin-left: 8px;
+    }
   }
 
   &.text {
-    width: 250px;
+    width: 203px;
 
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 8px;
+    margin-right: 8px;
   }
 }
 
@@ -36,7 +39,8 @@
     text-transform: uppercase;
 
     &.is-hover {
-      background-color: gray;
+      color: #139705;
+      background-color: #6AD85E;
 
       cursor: pointer;
     }

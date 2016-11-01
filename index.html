@@ -11,16 +11,28 @@
   <link rel="stylesheet" href="css/terminal.min.css">
 </head>
 <body>
-  <div class="container">
-    <samp class="row">
-      <div class="column pointers" id="pointer-1"></div>
+  <div class="container main-area">
+    <div class="row">
+      <samp class="fixed-width center-block">
+        <p>Welcome to ROBCO Industries (TM) Termlink</p>
 
-      <div class="column text" id="text-1"></div>
+        <p>Password Required</p>
 
-      <div class="column pointers" id="pointer-2"></div>
+        <p>Attempts Remaining: <span id="attempts"></span></p>
+      </samp>
+    </div>
 
-      <div class="column text" id="text-2"></div>
-    </samp>
+    <div class="row">
+      <samp class="fixed-width center-block clearfix">
+        <div class="column pointers" id="pointer-1"></div>
+
+        <div class="column text" id="text-1"></div>
+
+        <div class="column pointers" id="pointer-2"></div>
+
+        <div class="column text" id="text-2"></div>
+      </samp>
+    </div>
   </div>
 
   <script src="words.json"></script>
