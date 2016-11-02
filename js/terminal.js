@@ -40,6 +40,8 @@ Terminal.prototype.attachEventListeners = function () {
       }
 
       $population.addClass('is-hover');
+
+      $('#entry').html($population.text().toUpperCase());
     })
     .mouseout(function() {
       let $population = $(this);
@@ -51,6 +53,8 @@ Terminal.prototype.attachEventListeners = function () {
       }
 
       $population.removeClass('is-hover');
+
+      $('#entry').html('');
     });
 };
 
@@ -84,6 +88,16 @@ Terminal.prototype.generateWords = function () {
 Terminal.prototype.renderCharacters = function () {
   this._renderCharacterLoop('#text-1');
   this._renderCharacterLoop('#text-2');
+};
+
+Terminal.prototype.renderOutput = function () {
+  for (let i = 0; i < this.rows; i++) {
+    if (i + 1 == this.rows) {
+      $('#results').append('<p>&gt;<span id="entry"></span></p>');
+    } else {
+      $('#results').append('<p>&nbsp;</p>');
+    }
+  }
 };
 
 Terminal.prototype.renderPointers = function () {
@@ -246,4 +260,5 @@ terminal.determinePassword();
 terminal.renderCharacters();
 terminal.renderWords();
 terminal.renderSurrounders();
+terminal.renderOutput();
 terminal.attachEventListeners();
