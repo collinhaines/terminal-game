@@ -30,28 +30,18 @@ function Terminal() {
 }
 
 Terminal.prototype.attachEventListeners = function () {
+  const self = this;
+
   $('.text span')
     .mouseover(function() {
-      let $population = $(this);
-
-      if ($(this).is('[data-surround]') && ['<', '[', '{', '('].indexOf($(this).text()) > -1) {
-        $population = $('span[data-surround="' + $(this).attr('data-surround') + '"]');
-      } else if ($(this).is('[data-word]')) {
-        $population = $('span[data-word="' + $(this).attr('data-word') + '"]');
-      }
+      const $population = self._getPopulation($(this));
 
       $population.addClass('is-hover');
 
       $('#entry').html($population.text().toUpperCase());
     })
     .mouseout(function() {
-      let $population = $(this);
-
-      if ($(this).is('[data-surround]')) {
-        $population = $('span[data-surround="' + $(this).attr('data-surround') + '"]');
-      } else if ($(this).is('[data-word]')) {
-        $population = $('span[data-word="' + $(this).attr('data-word') + '"]');
-      }
+      const $population = self._getPopulation($(this));
 
       $population.removeClass('is-hover');
 
@@ -230,6 +220,16 @@ Terminal.prototype.renderWords = function () {
         .text(this.words[i][x])
         .attr('data-word', this.words[i]);
     }
+  }
+};
+
+Terminal.prototype._getPopulation = function (element) {
+  if (element.is('[data-surround]') && ['<', '[', '{', '('].indexOf(element.text()) > -1) {
+    return $('span[data-surround="' + element.attr('data-surround') + '"]');
+  } else if (element.is('[data-word]')) {
+    return $('span[data-word="' + element.attr('data-word') + '"]');
+  } else {
+    return element;
   }
 };
 
