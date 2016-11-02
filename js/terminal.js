@@ -7,6 +7,7 @@ function Terminal() {
   this.columns = 12;
 
   this.words    = new Array();
+  this.attempts = 4;
   this.password = '';
 
   this.characters = [
@@ -84,6 +85,12 @@ Terminal.prototype.generateWords = function () {
 
   console.info(this.words);
 };
+
+Terminal.prototype.renderAttempts = function () {
+  for (let i = $('#attempts > .attempt').length; i < this.attempts; i++) {
+    $('#attempts').append('<span class="attempt">&nbsp;</span>');
+  }
+}
 
 Terminal.prototype.renderCharacters = function () {
   this._renderCharacterLoop('#text-1');
@@ -260,5 +267,6 @@ terminal.determinePassword();
 terminal.renderCharacters();
 terminal.renderWords();
 terminal.renderSurrounders();
+terminal.renderAttempts();
 terminal.renderOutput();
 terminal.attachEventListeners();
