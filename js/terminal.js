@@ -235,7 +235,7 @@ Terminal.prototype.renderSurrounders = function () {
         if (x === start) {
           $span.text(this.surrounders[randomSurrounder].substring(0, 1));
         } else if (x === stop) {
-          $span.text(this.surrounders[randomSurrounder].substring(1, ));
+          $span.text(this.surrounders[randomSurrounder].substring(1, 2));
         }
       }
     }
