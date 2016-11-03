@@ -183,11 +183,49 @@ Terminal.prototype.renderOutput = function () {
 };
 
 Terminal.prototype.renderPointers = function () {
- // Generate pointers
+  // Generate pointers
+  let pointer  = 0;
   let pointers = new Array();
 
-  for (let i = 0; i < (this.rows * 2); i++) {
-    pointers.push('0x' + ('1234' + Math.floor(Math.random() * 12345).toString(16).toUpperCase()).substr(-4));
+  // If the pointer is below 256, the length of `.toString(16)` is 2.
+  // Why? Go to France around the year 770 and ask them.
+  while (pointer < 256) {
+    // We're going truly random here.
+    pointer = Math.floor(Math.random() * parseInt(Math.random().toString().substring(2, 6), 10));
+  }
+
+  for (let i = 0, loop = 0; i < (this.rows * 2); i++, loop++, pointer++) {
+    // Convert to hexadecimal.
+    let convert = pointer.toString(16).toUpperCase();
+
+    // Grab the last three characters.
+    if (convert.length > 3) {
+      convert = convert.substring(convert.length - 3, convert.length);
+    }
+
+    // There's probably a reason why every hacking terminal in Fallout have
+    // these constant endings.
+    //
+    // Fallout 4 starts with 0.
+    // Fallout 3 starts with C.
+    // Fallout: NV seems to start randomly.
+    switch (loop) {
+      case 0:
+        convert = convert + '0';
+        break;
+      case 1:
+        convert = convert + 'C';
+        break;
+      case 2:
+        convert = convert + '8';
+        break;
+      case 3:
+        loop    = -1;
+        convert = convert + '4';
+        break;
+    }
+
+    pointers.push('0x' + convert);
   }
 
   // Render pointers.
