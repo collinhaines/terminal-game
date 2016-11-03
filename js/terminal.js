@@ -340,17 +340,6 @@ Terminal.prototype._renderCharacterLoop = function(element) {
   }
 };
 
-/**
- * Accessors
- */
-Terminal.prototype.getCharacters = function () {
-  return this.characters;
-};
-
-Terminal.prototype.getSurrounders = function () {
-  return this.surrounders;
-};
-
 const terminal = new Terminal();
 terminal.renderPointers();
 terminal.generateWords();
