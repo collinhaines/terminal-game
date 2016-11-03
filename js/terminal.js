@@ -46,6 +46,91 @@ Terminal.prototype.attachEventListeners = function () {
       $population.removeClass('is-hover');
 
       $('#entry').html('');
+    })
+    .click(function () {
+      const $population = self._getPopulation($(this));
+
+      if ($population.is('[data-surround]')) {
+        if ($population.is('[data-replenishes]')) {
+          // Replenish attempts, internally.
+          self.attempts = 4;
+
+          // Replenish attempts, visually.
+          self.renderAttempts();
+
+          // Render the output.
+          self._insertOutput($population.text());
+          self._insertOutput('Tries reset.');
+        } else {
+          let removing;
+
+          while (true) {
+            const number = self._randomRangeNumber(0, self.words.length);
+            // Pick a random word.
+            removing = self.words[number];
+
+            // Do not pick the password.
+            if (removing !== self.password) {
+              // Remove the word from being able to be picked again.
+              self.words.splice(number, 1);
+
+              break;
+            }
+          }
+
+          // Remove the word visually.
+          $('span[data-word="' + removing + '"]')
+            .text('.')
+            .removeAttr('data-word');
+
+          // Render the output.
+          self._insertOutput($population.text());
+          self._insertOutput('Dud removed.');
+        }
+
+        // Remove this from being selected again.
+        $population
+          .text('.')
+          .removeAttr('data-surround')
+          .removeClass('is-hover');
+      } else if ($population.is('[data-word]')) {
+        if ($population.text() === self.password) {
+          // TODO: Something better.
+          self._insertOutput($population.text().toUpperCase());
+          self._insertOutput('Entry granted.');
+
+          $('.text span').off('click');
+        } else {
+          // Decrease attempts, internally.
+          self.attempts--;
+
+          // Decrease attempts, visually.
+          $('#attempts > .attempt:last-child').remove();
+
+          // TODO: Does the word go away and/or clickable again in the game?
+
+          // Detect the likeness.
+          let likeness = 0;
+          for (let i = 0; i < $population.text().length; i++) {
+            if ($population.text()[i] === self.password[i]) {
+              likeness++;
+            }
+          }
+
+          // Render the output.
+          self._insertOutput($population.text().toUpperCase());
+          self._insertOutput('Entry denied.');
+          self._insertOutput('Likeness=' + likeness);
+
+          // Player has failed to hack into the terminal.
+          if (self.attempts === 0) {
+            // TODO: Something better.
+            self._insertOutput('Locked out.');
+
+            $('.text span').off('click');
+          }
+        }
+      }
     });
 };
 
@@ -232,6 +317,12 @@ Terminal.prototype._getPopulation = function (element) {
     return element;
   }
 };
+
+Terminal.prototype._insertOutput = function (text) {
+  $('<p>&gt;' + text + '</p>').insertBefore($('#results > p:eq(14)'));
+
+  $('#results > p:eq(0)').remove();
+}
 
 Terminal.prototype._randomRangeNumber = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
