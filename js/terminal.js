@@ -4,6 +4,8 @@
  * Licensed under MIT (https://github.com/collinhaines/terminal-game/blob/master/LICENSE)
  */
 
+'use strict';
+
 /**
  * Constructor
  */
@@ -13,7 +15,7 @@ function Terminal() {
   this.columns = 12;
 
   // Initialize class-wide variables.
-  this.words    = new Array();
+  this.words    = [];
   this.attempts = 4;
   this.password = '';
 
@@ -27,8 +29,8 @@ function Terminal() {
     '?',  '$',  '*',
     '^',  ';',  ':',
     '@',  '#',  '"',
-    "'",  '~',  '|',
-    '_',  '`',  '\\'
+    '`',  '~',  '|',
+    '_',  '\'', '\\'
   ];
 
   // Initialize the surrounding characters.
@@ -256,9 +258,11 @@ Terminal.prototype.renderCharacters = function (element) {
     $(element).append('<div></div>');
 
     for (let x = 0; x < this.columns; x++) {
+      const char = this.characters[this._randomRangeNumber(0, this.characters.length)];
+
       $(element)
         .find('> div:last-child')
-        .append('<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>');
+        .append('<span>' + char + '</span>');
     }
   }
 };
@@ -274,7 +278,7 @@ Terminal.prototype.renderCharacters = function (element) {
  */
 Terminal.prototype.renderOutput = function () {
   for (let i = 0; i < this.rows; i++) {
-    if (i + 1 == this.rows) {
+    if (i + 1 === this.rows) {
       $('#results').append('<p>&gt;<span id="entry"></span></p>');
     } else {
       $('#results').append('<p>&nbsp;</p>');
@@ -292,7 +296,7 @@ Terminal.prototype.renderOutput = function () {
 Terminal.prototype.renderPointers = function () {
   // Generate pointers
   let pointer  = 0;
-  let pointers = new Array();
+  let pointers = [];
 
   // If the pointer is below 256, the length of `.toString(16)` is 2.
   // Why? Go to France around the year 770 and ask them.
@@ -360,9 +364,13 @@ Terminal.prototype.renderSurrounders = function () {
 
     const randomRow = this._randomRangeNumber(0, (this.rows * 2));
 
-    const $row = randomRow < this.rows
-      ? $('#text-1 > div:eq(' + randomRow + ')')
-      : $('#text-2 > div:eq(' + (randomRow - this.rows) + ')');
+    let $row;
+
+    if (randomRow < this.rows) {
+      $row = $('#text-1 > div:eq(' + randomRow + ')');
+    } else {
+      $row = $('#text-2 > div:eq(' + (randomRow - this.rows) + ')');
+    }
 
     if ($row.text().match(/[a-z]/i)) {
       i--;
@@ -433,10 +441,13 @@ Terminal.prototype.renderWords = function () {
         const previousMin = parseInt(key, 10) - 1;
         const previousMax = parseInt(key, 10) + parseInt(occupied[key], 10) + 1;
 
+        const isMinGood = previousMin <= currentMin && currentMin <= previousMax;
+        const isMaxGood = previousMin <= currentMax && currentMax <= previousMax;
+
         // Rather than checking if they current numbers are outside the range,
         // check if the current numbers are within the range. This will assure
         // that all previously occupied ranges are gone through.
-        if ((previousMin <= currentMin && currentMin <= previousMax) || (previousMin <= currentMax && currentMax <= previousMax)) {
+        if (isMinGood || isMaxGood) {
           freeToGo = false;
 
           break;
@@ -455,9 +466,13 @@ Terminal.prototype.renderWords = function () {
 
     // Iterate and render the possible password.
     for (let x = 0; x < this.words[i].length; x++, random++) {
-      const $span = (this.rows * this.columns) <= random
-        ? $('#text-2 span:eq(' + (random - (this.rows * this.columns)) + ')')
-        : $('#text-1 span:eq(' + random + ')');
+      let $span;
+
+      if ((this.rows * this.columns) <= random) {
+        $span = $('#text-2 span:eq(' + (random - (this.rows * this.columns)) + ')');
+      } else {
+        $span = $('#text-1 span:eq(' + random + ')');
+      }
 
       $span
         .text(this.words[i][x])
