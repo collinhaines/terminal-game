@@ -1,7 +1,12 @@
 /**
- *
+ * terminal.js v0.0.0
+ * Copyright (c) 2016. Collin Haines.
+ * Licensed under MIT (https://github.com/collinhaines/terminal-game/blob/master/LICENSE)
  */
 
+/**
+ * Constructor
+ */
 function Terminal() {
   // Declare the amount of rows and columns.
   this.rows    = 16;
@@ -74,6 +79,13 @@ function Terminal() {
   });
 }
 
+/**
+ * Renderer
+ *
+ * Calls rendering functions, a few of which are required to be in order.
+ *
+ * @return {Object}
+ */
 Terminal.prototype.render = function () {
   // Render the attempts.
   this.renderAttempts();
@@ -97,6 +109,22 @@ Terminal.prototype.render = function () {
   return this;
 };
 
+/**
+ * Event Listeners
+ *
+ * Attaches a mouse over, mouse out, and click event listener to each
+ * `$('.text span')` element.
+ *
+ * Mouse over will determine if the character is a part of a population
+ * of important notice (e.g. word, surrounding characters) and add a class
+ * that visually shows the nearby characters are grouped for a reason.
+ *
+ * Mouse out will remove the visual.
+ *
+ * Click will do the initial discovery that mouse over does and then will
+ * determine what occurs afterwards. Resulting in either a replenish, a dud
+ * removal, an attempt decrease, a loss, a win, or nothing at all.
+ */
 Terminal.prototype.attachEventListeners = function () {
   const self = this;
 
@@ -202,12 +230,27 @@ Terminal.prototype.attachEventListeners = function () {
     });
 };
 
+/**
+ * Attempt Renderer
+ *
+ * When initially called, will render four attempts, otherwise will render
+ * anywhere between 0 - 3 attempts, depending on whether the player has
+ * attempted to guess the password or not.
+ */
 Terminal.prototype.renderAttempts = function () {
   for (let i = $('#attempts > .attempt').length; i < this.attempts; i++) {
     $('#attempts').append('<span class="attempt">&nbsp;</span>');
   }
-}
+};
 
+/**
+ * Character Renderer
+ *
+ * Renders a random character for `this.rows * this.columns` amount within
+ * a given identifier of an element.
+ *
+ * @param {String} element -- The element identifier (e.g. the #id)
+ */
 Terminal.prototype.renderCharacters = function (element) {
   for (let i = 0; i < this.rows; i++) {
     $(element).append('<div></div>');
@@ -220,6 +263,15 @@ Terminal.prototype.renderCharacters = function (element) {
   }
 };
 
+/**
+ * Output Renderer
+ *
+ * Probably better identified as output initializer, and by ignoring CSS flex,
+ * this creates `this.rows - 1` empty `<p>` elements to visually show the
+ * output being at the bottom.
+ *
+ * TODO: There probably is a better way (possible: flex) to do this.
+ */
 Terminal.prototype.renderOutput = function () {
   for (let i = 0; i < this.rows; i++) {
     if (i + 1 == this.rows) {
@@ -230,6 +282,13 @@ Terminal.prototype.renderOutput = function () {
   }
 };
 
+/**
+ * Pointer Renderer
+ *
+ * By following Fallout 3, New Vegas, and 4's tradition of pointer increments,
+ * this creates a random hexadecimal location, and increments it `this.rows * 2`
+ * times while keeping the traditional ending seen in the games.
+ */
 Terminal.prototype.renderPointers = function () {
   // Generate pointers
   let pointer  = 0;
@@ -286,6 +345,12 @@ Terminal.prototype.renderPointers = function () {
   }
 };
 
+/**
+ * Surrounding Character Renderer
+ *
+ * By following rule #3, this renders 1 - `n - 2` surrounding character
+ * blocks randomly within the screen.
+ */
 Terminal.prototype.renderSurrounders = function () {
   // Rule #3.
   const amount = this._randomRangeNumber(1, this.words.length - 2);
@@ -328,6 +393,13 @@ Terminal.prototype.renderSurrounders = function () {
   }
 };
 
+/**
+ * Word Renderer
+ *
+ * The star of the show. Without rendering the same word twice or rendering a
+ * word within each other, this renders all words selected back in the
+ * constructor while specifying which one is the password.
+ */
 Terminal.prototype.renderWords = function () {
   let occupied = {};
 
@@ -394,6 +466,13 @@ Terminal.prototype.renderWords = function () {
   }
 };
 
+/**
+ * Internal function to determine if the highlighted element has any important
+ * "relatives" nearby.
+ *
+ * @param  {Element} element -- The initial highlighted element.
+ * @return {Element or NodeList}
+ */
 Terminal.prototype._getPopulation = function (element) {
   if (element.is('[data-surround]') && ['<', '[', '{', '('].indexOf(element.text()) > -1) {
     return $('span[data-surround="' + element.attr('data-surround') + '"]');
@@ -404,12 +483,27 @@ Terminal.prototype._getPopulation = function (element) {
   }
 };
 
+/**
+ * Internal function to write text to the output while deleting the upper-most
+ * `<p>` element to maintain visual appeal.
+ *
+ * TODO: See `Terminal.prototype.renderOutput` TODO and possibly replicate here.
+ *
+ * @param {String} text -- The text to output.
+ */
 Terminal.prototype._insertOutput = function (text) {
   $('<p>&gt;' + text + '</p>').insertBefore($('#results > p:eq(14)'));
 
   $('#results > p:eq(0)').remove();
-}
+};
 
+/**
+ * Internal function to randomly generate a number within a range.
+ *
+ * @param  {Integer} min -- The minimum of the range.
+ * @param  {Integer} max -- The maximum of the range.
+ * @return {Integer}
+ */
 Terminal.prototype._randomRangeNumber = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
