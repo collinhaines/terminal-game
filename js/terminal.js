@@ -3,13 +3,18 @@
  */
 
 function Terminal() {
+  // Declare the amount of rows and columns.
   this.rows    = 16;
   this.columns = 12;
 
+  // Initialize class-wide variables.
   this.words    = new Array();
   this.attempts = 4;
   this.password = '';
 
+  // Initialize the special characters.
+  // TODO: Include surrounding characters without creating
+  //       false positives on surrounding statements.
   this.characters = [
     ',',  '.',  '/',
     '!',  '%',  '&',
@@ -21,13 +26,76 @@ function Terminal() {
     '_',  '`',  '\\'
   ];
 
+  // Initialize the surrounding characters.
   this.surrounders = [
     '<>',
     '[]',
     '{}',
     '()'
   ];
+
+  // Generate the difficulty.
+  // TODO: More refined difficulty settings.
+  let difficulty = '';
+  switch (Math.floor(Math.random() * 3)) {
+    case 0:
+      difficulty = 'four';
+      break;
+    case 1:
+      difficulty = 'six';
+      break;
+    case 2:
+      difficulty = 'eight';
+      break;
+  }
+
+  console.info('Difficulty: ' + difficulty);
+
+  // Retrieve the words.
+  $.getJSON('words.json', (data) => {
+    // Insert 5 - 10 words.
+    for (let i = 0; i < this._randomRangeNumber(5, 10); i++) {
+      this.words.push(data[difficulty][this._randomRangeNumber(0, data[difficulty].length)]);
+    }
+
+    console.info(this.words);
+  })
+  .done(() => {
+    // Determine the password.
+    this.password = this.words[this._randomRangeNumber(0, this.words.length)];
+
+    console.info('Password: ' + this.password);
+
+    // Execute the rest.
+    this.render().attachEventListeners();
+  })
+  .fail(() => {
+    console.warn('Failed getting JSON.');
+  });
 }
+
+Terminal.prototype.render = function () {
+  // Render the attempts.
+  this.renderAttempts();
+
+  // Render the pointers.
+  this.renderPointers();
+
+  // Render the characters.
+  this.renderCharacters('#text-1');
+  this.renderCharacters('#text-2');
+
+  // Render the words.
+  this.renderWords();
+
+  // Render the surrounding characters.
+  this.renderSurrounders();
+
+  // Render the output.
+  this.renderOutput();
+
+  return this;
+};
 
 Terminal.prototype.attachEventListeners = function () {
   const self = this;
@@ -134,42 +202,22 @@ Terminal.prototype.attachEventListeners = function () {
     });
 };
 
-Terminal.prototype.determinePassword = function () {
-  this.password = this.words[this._randomRangeNumber(0, this.words.length)];
-
-  console.log('Password: ' + this.password);
-};
-
-Terminal.prototype.generateWords = function () {
-  const random   = Math.floor(Math.random() * 3);
-  let difficulty = '';
-
-  if (random === 0) {
-    difficulty = 'four';
-  } else if (random === 1) {
-    difficulty = 'six';
-  } else {
-    difficulty = 'eight';
-  }
-
-  console.info('Difficulty Setting is: ' + difficulty);
-
-  for (let i = 0; i < this._randomRangeNumber(5, 10); i++) {
-    this.words.push(_words[difficulty][this._randomRangeNumber(0, _words[difficulty].length)]);
-  }
-
-  console.info(this.words);
-};
-
 Terminal.prototype.renderAttempts = function () {
   for (let i = $('#attempts > .attempt').length; i < this.attempts; i++) {
     $('#attempts').append('<span class="attempt">&nbsp;</span>');
   }
 }
 
-Terminal.prototype.renderCharacters = function () {
-  this._renderCharacterLoop('#text-1');
-  this._renderCharacterLoop('#text-2');
+Terminal.prototype.renderCharacters = function (element) {
+  for (let i = 0; i < this.rows; i++) {
+    $(element).append('<div></div>');
+
+    for (let x = 0; x < this.columns; x++) {
+      $(element)
+        .find('> div:last-child')
+        .append('<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>');
+    }
+  }
 };
 
 Terminal.prototype.renderOutput = function () {
@@ -365,26 +413,3 @@ Terminal.prototype._insertOutput = function (text) {
 Terminal.prototype._randomRangeNumber = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
-
-Terminal.prototype._renderCharacterLoop = function(element) {
-  for (let i = 0; i < this.rows; i++) {
-    $(element).append('<div></div>');
-
-    for (let x = 0; x < this.columns; x++) {
-      $(element)
-        .find('> div:last-child')
-        .append('<span>' + this.characters[this._randomRangeNumber(0, this.characters.length)] + '</span>');
-    }
-  }
-};
-
-const terminal = new Terminal();
-terminal.renderPointers();
-terminal.generateWords();
-terminal.determinePassword();
-terminal.renderCharacters();
-terminal.renderWords();
-terminal.renderSurrounders();
-terminal.renderAttempts();
-terminal.renderOutput();
-terminal.attachEventListeners();
