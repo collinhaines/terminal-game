@@ -16,47 +16,62 @@ module.exports = function (grunt) {
     },
 
     'http-server': {
-      'dev': {
-        host: '127.0.0.1',
-        root: './',
+      default: {
+        host: 'localhost',
         port: 8080,
+        root: './'
       }
     },
 
     jshint: {
-      default: {
-        files: {
-          src: ['Gruntfile.js', 'js/*.js']
-        },
+      options: {
+        ignores:  ['js/*.min.js'],
+        jshintrc: 'js/.jshintrc'
+      },
 
-        options: {
-          ignores:  ['js/*.min.js'],
-          jshintrc: 'js/.jshintrc'
+      grunt: {
+        files: {
+          src: ['Gruntfile.js']
         }
+      },
+
+      scripts: {
+        src: ['js/*.js']
       }
     },
 
     less: {
-      default: {
-        options: {
-          compress:  true,
-          sourceMap: true
-        },
+      options: {
+        compress:  true,
+        sourceMap: true
+      },
+
+      bootstrap: {
         files: {
           'css/bootstrap-3.3.7.min.css': 'css/bootstrap/bootstrap.less',
+        }
+      },
+
+      terminal: {
+        files: {
           'css/terminal.min.css': 'css/terminal/terminal.less'
         }
       }
     },
 
     watch: {
-      less: {
-        files: ['css/**/*.less'],
-        tasks: ['less']
+      'less-bootstrap': {
+        files: ['css/bootstrap/**/*.less'],
+        tasks: ['less:bootstrap']
       },
 
-      scripts: {
-        files: ['Gruntfile.js', 'js/*.js', '!js/*.min.js'],
+      'less-terminal': {
+        files: ['css/terminal/*.less'],
+        tasks: ['less:terminal']
+      },
+
+      'lint-scripts': {
+        files: ['js/*.js', '!js/*.min.js'],
         tasks: ['jshint']
       }
     }
@@ -68,7 +83,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-http-server');
 
-  grunt.registerTask('dev', 'concurrent');
-  grunt.registerTask('lint', ['jshint']);
-  grunt.registerTask('default', 'less');
+  grunt.registerTask('compile', ['less:bootstrap', 'less:terminal']);
+  grunt.registerTask('dev',     ['concurrent']);
+  grunt.registerTask('lint',    ['jshint:scripts']);
+  grunt.registerTask('self',    ['jshint:grunt']);
+
+  grunt.registerTask('default', ['lint', 'compile']);
 };
