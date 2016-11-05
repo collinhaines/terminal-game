@@ -9,6 +9,9 @@
     "url": "https://github.com/collinhaines/terminal-game"
   },
   "license": "MIT",
+  "scripts": {
+    "lint": "grunt lint"
+  },
   "dependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-less": "^1.4.0"
