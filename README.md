@@ -1,3 +1,7 @@
+[![CircleCI](https://circleci.com/gh/collinhaines/terminal-game/tree/master.svg?style=svg)](https://circleci.com/gh/collinhaines/terminal-game/tree/master)
+[![dependencies Status](https://david-dm.org/collinhaines/terminal-game/status.svg?style=flat-square)](https://david-dm.org/collinhaines/terminal-game)
+[![devDependencies Status](https://david-dm.org/collinhaines/terminal-game/dev-status.svg?style=flat-square)](https://david-dm.org/collinhaines/terminal-game?type=dev)
+
 # Terminal Game
 Inspired by the hacking mini-game within the latest installments of the Fallout series.
 
