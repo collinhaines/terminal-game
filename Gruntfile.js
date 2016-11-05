@@ -59,6 +59,29 @@ module.exports = function (grunt) {
       }
     },
 
+    lesslint: {
+      options: {
+        failOnWarning: false,
+        csslint: {
+          csslintrc: 'css/.csslintrc'
+        }
+      },
+
+      bootstrap: {
+        src: ['css/bootstrap/bootstrap.less'],
+        options: {
+          imports: ['css/bootstrap/**.less']
+        }
+      },
+
+      terminal: {
+        src: ['css/terminal/terminal.less'],
+        options: {
+          imports: ['css/terminal/*.less']
+        }
+      }
+    },
+
     watch: {
       'less-bootstrap': {
         files: ['css/bootstrap/**/*.less'],
@@ -70,9 +93,19 @@ module.exports = function (grunt) {
         tasks: ['less:terminal']
       },
 
+      'lint-bootstrap': {
+        files: ['css/bootstrap/**/*.less'],
+        tasks: ['lesslint:bootstrap']
+      },
+
       'lint-scripts': {
         files: ['js/*.js', '!js/*.min.js'],
         tasks: ['jshint']
+      },
+
+      'lint-terminal': {
+        files: ['css/terminal/*.less'],
+        tasks: ['lesslint:terminal']
       }
     }
   });
@@ -82,10 +115,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-lesslint');
 
   grunt.registerTask('compile', ['less:bootstrap', 'less:terminal']);
   grunt.registerTask('dev',     ['concurrent']);
-  grunt.registerTask('lint',    ['jshint:scripts']);
+  grunt.registerTask('lint',    ['jshint:scripts', 'lesslint:bootstrap', 'lesslint:terminal']);
   grunt.registerTask('self',    ['jshint:grunt']);
 
   grunt.registerTask('default', ['lint', 'compile']);

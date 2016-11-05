@@ -17,6 +17,7 @@
     "grunt-concurrent": "^2.3.1",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-http-server": "^2.0.0"
+    "grunt-http-server": "^2.0.0",
+    "grunt-lesslint": "^3.2.0"
   }
 }
