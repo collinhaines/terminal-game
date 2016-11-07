@@ -1,5 +1,5 @@
 /**
- * terminal.js v0.0.0
+ * terminal.js v0.1.0
  * Copyright (c) 2016. Collin Haines.
  * Licensed under MIT (https://github.com/collinhaines/terminal-game/blob/master/LICENSE)
  */
@@ -132,105 +132,140 @@ Terminal.prototype.render = function () {
 Terminal.prototype.attachEventListeners = function () {
   const self = this;
 
+  $(document).on('keydown', function (event) {
+    // First, check if it was enter, and if there's something highlighted.
+    if (event.which === 13 && $('.text span.is-hover').length > 0) {
+      console.info('Enter pressed.');
+
+      self._processInput();
+
+      return false;
+    }
+
+    // Otherwise, if it was not an arrow key, neglect it.
+    if ([37, 38, 39, 40].indexOf(event.which) === -1) {
+      return false;
+    }
+
+    // Either highlight the "origin" of the board, or process where to go.
+    if ($('.text span.is-hover').length === 0) {
+      self._highlightAdd($('#text-1 > div:first-child > span:first-child'));
+    } else {
+      const $exact = $('.text span.is-hover[data-exact=true]');
+      const $row   = $exact.parent();
+      const $text  = $row.parent();
+
+      // Detect if unable to move left.
+      if (event.which === 37 && $exact.is(':first-child') && $text.is('#text-1')) {
+        return false;
+      }
+
+      // Detect if unable to move up.
+      if (event.which === 38 && $row.is(':first-child')) {
+        return false;
+      }
+
+      // Detect if unable to move right.
+      if (event.which === 39 && $exact.is(':last-child') && $text.is('#text-2')) {
+        return false;
+      }
+
+      // Detect if unable to move down.
+      if (event.which === 40 && $row.is(':last-child')) {
+        return false;
+      }
+
+      // From here, it's assumed the arrow key can move.
+      self._highlightRemove($exact);
+
+      // Detect if need to move from `#text-1` to `#text-2`.
+      if (event.which === 39 && $exact.is(':last-child') && $text.is('#text-1')) {
+        self._highlightAdd($('#text-2 > div:eq(' + $row.data('row') + ') > span').first());
+
+        return false;
+      }
+
+      // Detect if need to move from `#text-2` to `#text-1`.
+      if (event.which === 37 && $exact.is(':first-child') && $text.is('#text-2')) {
+        self._highlightAdd($('#text-1 > div:eq(' + $row.data('row') + ') > span').last());
+
+        return false;
+      }
+
+      // Default moving.
+      switch (event.which) {
+        // The left arrow key.
+        case 37:
+          let $left = $exact.prev();
+
+          // Skip over the word, rather than go through each letter.
+          if ($exact.is('[data-word]') && $left.is('[data-word]')) {
+            const $word = $('[data-word="' + $left.data('word') + '"]');
+
+            $left = $word.first().prev();
+
+            // However, if the word is on two lines, do not skip the word.
+            if ($left.parent().data('row') !== $exact.parent().data('row')) {
+              $left = $exact.prev();
+            }
+
+            // Also, if the word is at the beginning of `#text-2`, mimic column shift.
+            if ($row.find('> span:first-child').is($word) && $text.is('#text-2')) {
+              $left = $('#text-1 > div:eq(' + $row.data('row') + ') > span').last();
+            }
+          }
+
+          self._highlightAdd($left);
+          break;
+
+        // The up arrow key.
+        case 38:
+          self._highlightAdd($row.prev().find('[data-column="' + $exact.data('column') + '"]'));
+          break;
+
+        // The right arrow key.
+        case 39:
+          let $right = $exact.next();
+
+          // Skip over the word, rather than go through each letter.
+          if ($exact.is('[data-word]') && $right.is('[data-word]')) {
+            const $word = $('[data-word="' + $right.data('word') + '"]');
+
+            $right = $word.last().next();
+
+            // However, if the word is on two lines, do not skip the word.
+            if ($right.parent().data('row') !== $exact.parent().data('row')) {
+              $right = $exact.next();
+            }
+
+            // Also, if the word is at the end of `#text-1`, mimic column shift.
+            if ($row.find('> span:last-child').is($word) && $text.is('#text-1')) {
+              $right = $('#text-2 > div:eq(' + $row.data('row') + ') > span').first();
+            }
+          }
+
+          self._highlightAdd($right);
+          break;
+
+        // The down arrow key.
+        case 40:
+          self._highlightAdd($row.next().find('[data-column="' + $exact.data('column') + '"]'));
+          break;
+      }
+    }
+  });
+
   $('.text span')
-    .mouseover(function() {
-      const $population = self._getPopulation($(this));
+    .mouseover(function () {
+      $('.text span.is-hover').removeClass('is-hover');
 
-      $population.addClass('is-hover');
-
-      $('#entry').html($population.text().toUpperCase());
+      self._highlightAdd($(this));
     })
-    .mouseout(function() {
-      const $population = self._getPopulation($(this));
-
-      $population.removeClass('is-hover');
-
-      $('#entry').html('');
+    .mouseout(function () {
+      self._highlightRemove($(this));
     })
     .click(function () {
-      const $population = self._getPopulation($(this));
-
-      if ($population.is('[data-surround]')) {
-        if ($population.is('[data-replenishes]')) {
-          // Replenish attempts, internally.
-          self.attempts = 4;
-
-          // Replenish attempts, visually.
-          self.renderAttempts();
-
-          // Render the output.
-          self._insertOutput($population.text());
-          self._insertOutput('Tries reset.');
-        } else {
-          let removing;
-
-          while (true) {
-            const number = self._randomRangeNumber(0, self.words.length);
-            // Pick a random word.
-            removing = self.words[number];
-
-            // Do not pick the password.
-            if (removing !== self.password) {
-              // Remove the word from being able to be picked again.
-              self.words.splice(number, 1);
-
-              break;
-            }
-          }
-
-          // Remove the word visually.
-          $('span[data-word="' + removing + '"]')
-            .text('.')
-            .removeAttr('data-word');
-
-          // Render the output.
-          self._insertOutput($population.text());
-          self._insertOutput('Dud removed.');
-        }
-
-        // Remove this from being selected again.
-        $population
-          .text('.')
-          .removeAttr('data-surround')
-          .removeClass('is-hover');
-      } else if ($population.is('[data-word]')) {
-        if ($population.text() === self.password) {
-          // TODO: Something better.
-          self._insertOutput($population.text().toUpperCase());
-          self._insertOutput('Entry granted.');
-
-          $('.text span').off('click');
-        } else {
-          // Decrease attempts, internally.
-          self.attempts--;
-
-          // Decrease attempts, visually.
-          $('#attempts > .attempt:last-child').remove();
-
-          // TODO: Does the word go away and/or clickable again in the game?
-
-          // Detect the likeness.
-          let likeness = 0;
-          for (let i = 0; i < $population.text().length; i++) {
-            if ($population.text()[i] === self.password[i]) {
-              likeness++;
-            }
-          }
-
-          // Render the output.
-          self._insertOutput($population.text().toUpperCase());
-          self._insertOutput('Entry denied.');
-          self._insertOutput('Likeness=' + likeness);
-
-          // Player has failed to hack into the terminal.
-          if (self.attempts === 0) {
-            // TODO: Something better.
-            self._insertOutput('Locked out.');
-
-            $('.text span').off('click');
-          }
-        }
-      }
+      self._processInput();
     });
 };
 
@@ -257,14 +292,14 @@ Terminal.prototype.renderAttempts = function () {
  */
 Terminal.prototype.renderCharacters = function (element) {
   for (let i = 0; i < this.rows; i++) {
-    $(element).append('<div></div>');
+    $(element).append('<div data-row="' + i + '"></div>');
 
     for (let x = 0; x < this.columns; x++) {
       const char = this.characters[this._randomRangeNumber(0, this.characters.length)];
 
       $(element)
         .find('> div:last-child')
-        .append('<span>' + char + '</span>');
+        .append('<span data-column="' + x + '">' + char + '</span>');
     }
   }
 };
@@ -281,7 +316,7 @@ Terminal.prototype.renderCharacters = function (element) {
 Terminal.prototype.renderOutput = function () {
   for (let i = 0; i < this.rows; i++) {
     if (i + 1 === this.rows) {
-      $('#results').append('<p>&gt;<span id="entry"></span></p>');
+      $('#results').append('<p>&gt;<span class="entry" id="entry"></span></p>');
     } else {
       $('#results').append('<p>&nbsp;</p>');
     }
@@ -488,14 +523,53 @@ Terminal.prototype.renderWords = function () {
  * @param  {Element} element -- The initial highlighted element.
  * @return {Element or NodeList}
  */
-Terminal.prototype._getPopulation = function (element) {
-  if (element.is('[data-surround]') && ['<', '[', '{', '('].indexOf(element.text()) > -1) {
-    return $('span[data-surround="' + element.attr('data-surround') + '"]');
-  } else if (element.is('[data-word]')) {
-    return $('span[data-word="' + element.attr('data-word') + '"]');
+Terminal.prototype._getPopulation = function ($element) {
+  if ($element.is('[data-surround]') && ['<', '[', '{', '('].indexOf($element.text()) > -1) {
+    return $('span[data-surround="' + $element.attr('data-surround') + '"]');
+  } else if ($element.is('[data-word]')) {
+    return $('span[data-word="' + $element.attr('data-word') + '"]');
   } else {
-    return element;
+    return $element;
   }
+};
+
+/**
+ * Highlight Addition
+ *
+ * Adds a visual highlight of the character(s) selected.
+ *
+ * @param {Element} $element -- The current element.
+ */
+Terminal.prototype._highlightAdd = function ($element) {
+  // Add our exact location.
+  $element.attr('data-exact', true);
+
+  // Determine if we have any friends.
+  const $population = this._getPopulation($element);
+
+  // Add the hovering to whomever is applicable.
+  $population.addClass('is-hover');
+
+  // Alert the entry of new text.
+  $('#entry').html($population.text());
+};
+
+/**
+ * Highlight Remover
+ *
+ * Removes a highlight from the current character(s) selected.
+ *
+ * @param {Element} $element -- The current element.
+ */
+Terminal.prototype._highlightRemove = function ($element) {
+  // Remove our exact location.
+  $element.removeAttr('data-exact');
+
+  // Remove any traces that we were here.
+  $('.text span.is-hover').removeClass('is-hover');
+
+  // Even... even the entry.
+  $('#entry').html('');
 };
 
 /**
@@ -510,6 +584,97 @@ Terminal.prototype._insertOutput = function (text) {
   $('<p>&gt;' + text + '</p>').insertBefore($('#results > p:eq(14)'));
 
   $('#results > p:eq(0)').remove();
+};
+
+/**
+ * Processor
+ *
+ * Processes the selected character(s) and determines what to do.
+ */
+Terminal.prototype._processInput = function () {
+  const $population = this._getPopulation($('[data-exact="true"]'));
+
+  if ($population.is('[data-surround]') && $population.length > 1) {
+    if ($population.is('[data-replenishes]')) {
+      // Replenish attempts, internally.
+      this.attempts = 4;
+
+      // Replenish attempts, visually.
+      this.renderAttempts();
+
+      // Render the output.
+      this._insertOutput($population.text());
+      this._insertOutput('Tries reset.');
+    } else {
+      let removing;
+
+      while (true) {
+        const number = this._randomRangeNumber(0, this.words.length);
+        // Pick a random word.
+        removing = this.words[number];
+
+        // Do not pick the password.
+        if (removing !== this.password) {
+          // Remove the word from being able to be picked again.
+          this.words.splice(number, 1);
+
+          break;
+        }
+      }
+
+      // Remove the word visually.
+      $('span[data-word="' + removing + '"]')
+        .text('.')
+        .removeAttr('data-word');
+
+      // Render the output.
+      this._insertOutput($population.text());
+      this._insertOutput('Dud removed.');
+    }
+
+    // Remove this from being selected again.
+    $population
+      .text('.')
+      .removeAttr('data-surround')
+      .removeClass('is-hover');
+  } else if ($population.is('[data-word]')) {
+    if ($population.text() === this.password) {
+      // TODO: Something better.
+      this._insertOutput($population.text().toUpperCase());
+      this._insertOutput('Entry granted.');
+
+      $('.text span').off('click');
+    } else {
+      // Decrease attempts, internally.
+      this.attempts--;
+
+      // Decrease attempts, visually.
+      $('#attempts > .attempt:last-child').remove();
+
+      // TODO: Does the word go away and/or clickable again in the game?
+
+      // Detect the likeness.
+      let likeness = 0;
+      for (let i = 0; i < $population.text().length; i++) {
+        if ($population.text()[i] === this.password[i]) {
+          likeness++;
+        }
+      }
+
+      // Render the output.
+      this._insertOutput($population.text().toUpperCase());
+      this._insertOutput('Entry denied.');
+      this._insertOutput('Likeness=' + likeness);
+
+      // Player has failed to hack into the terminal.
+      if (this.attempts === 0) {
+        // TODO: Something better.
+        this._insertOutput('Locked out.');
+
+        $('.text span').off('click');
+      }
+    }
+  }
 };
 
 /**

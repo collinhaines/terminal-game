@@ -1,7 +1,7 @@
 {
   "name": "terminal-game",
   "homepage": "https://sandbox.collinhaines.com/terminal/",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A browser-based game inspired from hacking in the latest Fallout series.",
   "author": "Collin Haines",
   "repository": {
