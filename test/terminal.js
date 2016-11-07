@@ -7,7 +7,7 @@
 'use strict';
 
 const chai     = require('chai');
-const Terminal = require('../js/terminal.js');
+const Terminal = require('../js/src/terminal.js');
 
 describe('Terminal', () => {
   const main = new Terminal();

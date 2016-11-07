@@ -6,6 +6,35 @@
 
 module.exports = function (grunt) {
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+
+    minified: 'terminal-<%= pkg.version %>.min.js',
+
+    babel: {
+      default: {
+        files: {
+          'js/<%= minified %>': ['js/<%= minified %>']
+        },
+
+        options: {
+          presets: ['es2015']
+        }
+      }
+    },
+
+    concat: {
+      default: {
+        src:  ['js/src/*js'],
+        dest: 'js/<%= minified %>',
+        options: {
+          // Remove `module.exports` at the bottom for the browser.
+          process: function (src) {
+            return src.replace(/^(module.exports).*/gm, '');
+          }
+        }
+      }
+    },
+
     concurrent: {
       default: {
         tasks: ['http-server', 'watch'],
@@ -25,7 +54,6 @@ module.exports = function (grunt) {
 
     jshint: {
       options: {
-        ignores:  ['js/*.min.js'],
         jshintrc: 'js/.jshintrc'
       },
 
@@ -36,7 +64,7 @@ module.exports = function (grunt) {
       },
 
       scripts: {
-        src: ['js/*.js']
+        src: ['js/src/*.js']
       }
     },
 
@@ -92,6 +120,21 @@ module.exports = function (grunt) {
       }
     },
 
+    uglify: {
+      default: {
+        files: {
+          'js/<%= minified %>': ['js/<%= minified %>']
+        },
+
+        options: {
+          compress: {
+            warnings: false
+          },
+          mangle: true
+        }
+      }
+    },
+
     watch: {
       'less-bootstrap': {
         files: ['css/bootstrap/**/*.less'],
@@ -108,14 +151,14 @@ module.exports = function (grunt) {
         tasks: ['lesslint:bootstrap']
       },
 
-      'lint-scripts': {
-        files: ['js/*.js', '!js/*.min.js'],
-        tasks: ['jshint:scripts']
-      },
-
       'lint-terminal': {
         files: ['css/terminal/*.less'],
         tasks: ['lesslint:terminal']
+      },
+
+      scripts: {
+        files: ['js/src/*.js'],
+        tasks: ['jshint:scripts', 'scripts']
       },
 
       test: {
@@ -125,18 +168,13 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-http-server');
-  grunt.loadNpmTasks('grunt-lesslint');
-  grunt.loadNpmTasks('grunt-mocha-test');
+  require('load-grunt-tasks')(grunt);
 
-  grunt.registerTask('compile', ['less:bootstrap', 'less:terminal']);
+  grunt.registerTask('compile', ['less', 'scripts']);
   grunt.registerTask('dev',     ['concurrent']);
-  grunt.registerTask('lint',    ['jshint:scripts', 'lesslint:bootstrap', 'lesslint:terminal']);
+  grunt.registerTask('lint',    ['jshint:scripts', 'lesslint']);
   grunt.registerTask('self',    ['jshint:grunt']);
+  grunt.registerTask('scripts', ['concat', 'babel', 'uglify']);
 
   grunt.registerTask('default', ['lint', 'compile']);
 };
