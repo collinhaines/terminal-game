@@ -82,6 +82,16 @@ module.exports = function (grunt) {
       }
     },
 
+    mochaTest: {
+      default: {
+        src: ['test/*.js'],
+        options: {
+          log:       true,
+          logErrors: true
+        }
+      }
+    },
+
     watch: {
       'less-bootstrap': {
         files: ['css/bootstrap/**/*.less'],
@@ -100,12 +110,17 @@ module.exports = function (grunt) {
 
       'lint-scripts': {
         files: ['js/*.js', '!js/*.min.js'],
-        tasks: ['jshint']
+        tasks: ['jshint:scripts']
       },
 
       'lint-terminal': {
         files: ['css/terminal/*.less'],
         tasks: ['lesslint:terminal']
+      },
+
+      test: {
+        files: ['test/*.js'],
+        tasks: ['mochaTest']
       }
     }
   });
@@ -116,6 +131,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-http-server');
   grunt.loadNpmTasks('grunt-lesslint');
+  grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('compile', ['less:bootstrap', 'less:terminal']);
   grunt.registerTask('dev',     ['concurrent']);

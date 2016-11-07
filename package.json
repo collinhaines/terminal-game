@@ -10,17 +10,21 @@
   },
   "license": "MIT",
   "scripts": {
-    "lint": "grunt lint"
+    "lint": "grunt lint",
+    "test": "mocha"
   },
   "dependencies": {
     "grunt": "^1.0.1",
     "grunt-contrib-less": "^1.4.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "grunt-concurrent": "^2.3.1",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-http-server": "^2.0.0",
-    "grunt-lesslint": "^3.2.0"
+    "grunt-lesslint": "^3.2.0",
+    "grunt-mocha-test": "^0.13.2",
+    "mocha": "^3.1.2"
   }
 }

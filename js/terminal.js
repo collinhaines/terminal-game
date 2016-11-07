@@ -43,43 +43,45 @@ function Terminal() {
 
   // Generate the difficulty.
   // TODO: More refined difficulty settings.
-  let difficulty = '';
+  this.difficulty = '';
   switch (Math.floor(Math.random() * 3)) {
     case 0:
-      difficulty = 'four';
+      this.difficulty = 'four';
       break;
     case 1:
-      difficulty = 'six';
+      this.difficulty = 'six';
       break;
     case 2:
-      difficulty = 'eight';
+      this.difficulty = 'eight';
       break;
   }
-
-  console.info('Difficulty: ' + difficulty);
-
-  // Retrieve the words.
-  $.getJSON('words.json', (data) => {
-    // Insert 5 - 10 words.
-    for (let i = 0; i < this._randomRangeNumber(5, 10); i++) {
-      this.words.push(data[difficulty][this._randomRangeNumber(0, data[difficulty].length)]);
-    }
-
-    console.info(this.words);
-  })
-  .done(() => {
-    // Determine the password.
-    this.password = this.words[this._randomRangeNumber(0, this.words.length)];
-
-    console.info('Password: ' + this.password);
-
-    // Execute the rest.
-    this.render().attachEventListeners();
-  })
-  .fail(() => {
-    console.warn('Failed getting JSON.');
-  });
 }
+
+/**
+ * Retriever
+ *
+ * Retrieves the words from the words.json file via AJAX.
+ *
+ * @return {Object}
+ */
+Terminal.prototype.retrieveWords = function () {
+  const data = $.ajax({
+    url:   'words.json',
+    async: false
+  }).responseJSON;
+
+  // Insert 5 - 10 words.
+  for (let i = 0; i < this._randomRangeNumber(5, 10); i++) {
+    const index = this._randomRangeNumber(0, data[this.difficulty].length);
+
+    this.words.push(data[this.difficulty][index]);
+  }
+
+  // Determine the password.
+  this.password = this.words[this._randomRangeNumber(0, this.words.length)];
+
+  return this;
+};
 
 /**
  * Renderer
@@ -412,8 +414,6 @@ Terminal.prototype.renderWords = function () {
   let occupied = {};
 
   for (let i = 0; i < this.words.length; i++) {
-    console.info('Rendering: ' + this.words[i]);
-
     let random;
 
     while (true) {
@@ -522,3 +522,5 @@ Terminal.prototype._insertOutput = function (text) {
 Terminal.prototype._randomRangeNumber = function(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 };
+
+module.exports = Terminal;
