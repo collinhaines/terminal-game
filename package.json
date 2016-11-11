@@ -10,6 +10,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "build": "grunt compile",
     "lint": "grunt lint",
     "test": "mocha"
   },
