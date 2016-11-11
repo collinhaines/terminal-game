@@ -7,12 +7,16 @@
 'use strict';
 
 const chai     = require('chai');
+const Utils    = require('../js/src/utils.js');
 const Terminal = require('../js/src/terminal.js');
 
 describe('Terminal', () => {
+  const utils    = new Utils();
   const terminal = new Terminal();
 
   describe('constructor', () => {
+    terminal.setUtils(utils);
+
     it('is 16 rows deep', () => {
       chai.assert.equal(16, terminal.getRows());
     });
@@ -49,6 +53,26 @@ describe('Terminal', () => {
       terminal.replenishAttempts();
 
       chai.assert.equal(4, terminal.getAttempts());
+    });
+  });
+
+  describe('pointers', () => {
+    it('can be generated', () => {
+      chai.assert.notEqual([], terminal.generatePointers());
+    });
+  });
+
+  describe('words', () => {
+    it('has words now', () => {
+      terminal.generateWords(JSON.parse(require('fs').readFileSync(require('path').resolve(__dirname, '../words.json')).toString()));
+
+      chai.assert.notEqual(0, terminal.getWords().length);
+    });
+
+    it('has password now', () => {
+      terminal.generatePassword();
+
+      chai.assert.notEqual('', terminal.getPassword());
     });
   });
 });
