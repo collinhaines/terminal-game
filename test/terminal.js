@@ -10,45 +10,45 @@ const chai     = require('chai');
 const Terminal = require('../js/src/terminal.js');
 
 describe('Terminal', () => {
-  const main = new Terminal();
+  const terminal = new Terminal();
 
   describe('constructor', () => {
     it('is 16 rows deep', () => {
-      chai.assert.equal(16, main.getRows());
+      chai.assert.equal(16, terminal.getRows());
     });
 
     it('is 12 columns wide', () => {
-      chai.assert.equal(12, main.getColumns());
+      chai.assert.equal(12, terminal.getColumns());
     });
 
     it('has an empty word array', () => {
-      chai.assert.equal(0, main.getWords().length);
+      chai.assert.equal(0, terminal.getWords().length);
     });
 
     it('has 4 attempts', () => {
-      chai.assert.equal(4, main.getAttempts());
+      chai.assert.equal(4, terminal.getAttempts());
     });
 
     it('has no initial password', () => {
-      chai.assert.equal('', main.getPassword());
+      chai.assert.equal('', terminal.getPassword());
     });
 
     it('is either four, six, or eight difficulty', () => {
-      chai.assert.oneOf(main.difficulty, ['four', 'six', 'eight']);
+      chai.assert.oneOf(terminal.difficulty, ['four', 'six', 'eight']);
     });
   });
 
   describe('attempts', () => {
     it('is now 3 attempts', () => {
-      main.decreaseAttempt();
+      terminal.decreaseAttempt();
 
-      chai.assert.equal(3, main.getAttempts());
+      chai.assert.equal(3, terminal.getAttempts());
     });
 
     it('is now 4 attempts', () => {
-      main.replenishAttempts();
+      terminal.replenishAttempts();
 
-      chai.assert.equal(4, main.getAttempts());
+      chai.assert.equal(4, terminal.getAttempts());
     });
   });
 });
