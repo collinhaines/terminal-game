@@ -57,9 +57,51 @@
   <script src="js/jquery-3.1.1.min.js"></script>
   <script src="js/terminal-0.1.0.min.js"></script>
   <script>
+    // Construct.
+    const utils    = new Utils();
+    const visuals  = new Visuals();
+    const renderer = new Renderer();
     const terminal = new Terminal();
 
-    terminal.retrieveWords().render().attachEventListeners();
+    // Attach exterior classes.
+    renderer.setUtils(utils);
+
+    terminal.setUtils(utils);
+
+    visuals.setTerminal(terminal);
+    visuals.setRenderer(renderer);
+    visuals.setUtils(utils);
+
+    // Render the pointers.
+    renderer.renderPointers(terminal.generatePointers());
+
+    // Render the attempts.
+    renderer.renderAttempts(terminal.getAttempts());
+
+    // Render characters.
+    renderer.renderCharacters($('#text-1'), terminal.getCharacters(), terminal.getRows(), terminal.getColumns());
+    renderer.renderCharacters($('#text-2'), terminal.getCharacters(), terminal.getRows(), terminal.getColumns());
+
+    // Generate words.
+    terminal.generateWords($.ajax({
+      async: false,
+      url:   'words.json'
+    }).responseJSON);
+
+    // Generate the password.
+    terminal.generatePassword();
+
+    // Render the words on the board.
+    renderer.renderWords(terminal.getWords(), terminal.getRows(), terminal.getColumns());
+
+    // Render the surrounding characters.
+    renderer.renderSurrounders(terminal.getWords(), terminal.getSurrounders(), terminal.getRows(), terminal.getColumns());
+
+    // Render the output to the side of the board.
+    renderer.renderOutput(terminal.getRows());
+
+    // Create event listeners.
+    visuals.attachEventListeners();
   </script>
 </body>
 </html>
