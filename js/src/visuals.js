@@ -332,11 +332,14 @@ Visuals.prototype.processInput = function () {
     this.renderer.print($population.text());
     this.renderer.print(output);
 
+    // Remove just the multiple items of hover.
+    $population.removeClass('is-hover');
+
     // Remove this from being selected again.
-    $population
+    $exact
+      .addClass('is-hover')
       .attr('data-skip', true)
-      .removeAttr('data-replenishes')
-      .removeClass('is-hover');
+      .removeAttr('data-replenishes');
   }
 
   if ($population.is('[data-word]')) {
