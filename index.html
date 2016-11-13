@@ -28,7 +28,7 @@
 <body>
   <div class="container main-area">
     <div class="row">
-      <samp class="fixed-width center-block">
+      <samp class="fixed-width center-block" id="information">
         <p>Welcome to ROBCO Industries (TM) Termlink</p>
 
         <p>Password Required</p>
@@ -103,6 +103,16 @@
 
     // Create event listeners.
     visuals.attachEventListeners();
+
+    // TODO: Detect Android tablets.
+    const tablets = ['iPad', 'Kindle', 'Kindle Fire'];
+
+    // Alert tablet users the arrow functionality is "broken".
+    // There's probably a way to actually detect if an external keyboard is
+    // hooked up to a tablet.
+    if (tablets.indexOf(platform.product) > -1) {
+      $('<p>!! Warning !!</p><p>External Keyboard Not Found. Limited Usage Probable</p>').insertAfter($('#information > p:first-child'));
+    }
   </script>
 </body>
 </html>
