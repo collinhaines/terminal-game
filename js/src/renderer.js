@@ -103,7 +103,7 @@ Renderer.prototype.renderPointers = function (pointers) {
 /**
  * Surrounding Character Renderer
  *
- * Following rule #3, this renders `1 - (n - 2)` surrounding character blocks
+ * Following rule #3, this renders 1 to `n - 2` surrounding character blocks
  * randomly within the board.
  *
  * @param {Array}   words       -- All words from Terminal.
@@ -138,14 +138,12 @@ Renderer.prototype.renderSurrounders = function (words, surrounders, rows, colum
       for (let x = start; x <= stop; x++) {
         const $span = $row.find('> span:eq(' + x + ')');
 
-        $span.attr('data-surround', i);
-
-        if (i === 0) {
-          $span.attr('data-replenishes', true);
-        }
-
         if (x === start) {
           $span.text(surrounders[surrounder].substring(0, 1));
+
+          if (i === 0) {
+            $span.attr('data-replenishes', true);
+          }
         } else if (x === stop) {
           $span.text(surrounders[surrounder].substring(1, 2));
         }

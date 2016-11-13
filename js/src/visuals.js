@@ -170,14 +170,34 @@ Visuals.prototype.attachEventListeners = function () {
 };
 
 /**
+ * Ending Determiner
+ *
+ * Determines where within a given text that an ending bracket is located.
+ *
+ * @param  {String} text -- The text to search.
+ * @return {Integer}
+ */
+Visuals.prototype.endingBracketLocation = function (text) {
+  const brackets = ['>', ']', '}', ')'];
+
+  for (let i = 0; i < brackets.length; i++) {
+    if (text.indexOf(brackets[i]) > -1) {
+      return text.indexOf(brackets[i]);
+    }
+  }
+
+  return -1;
+};
+
+/**
  * Determines if the highlighted element has any notable relatives nearby.
  *
  * @param  {Element} element -- The initial highlighted element.
  * @return {Element or NodeList}
  */
 Visuals.prototype.getPopulation = function ($element) {
-  if ($element.is('[data-surround]') && ['<', '[', '{', '('].indexOf($element.text()) > -1) {
-    return $('span[data-surround="' + $element.attr('data-surround') + '"]');
+  if (this.isBeginningBracket($element) && $element.attr('data-skip') === undefined) {
+    return this.locateEnding($element);
   } else if ($element.is('[data-word]')) {
     return $('span[data-word="' + $element.attr('data-word') + '"]');
   } else {
@@ -225,15 +245,49 @@ Visuals.prototype.highlightRemove = function ($element) {
 };
 
 /**
+ * Beginning Bracket Determiner
+ *
+ * Determines if the element is a beginning bracket.
+ *
+ * @param  {Element} $element -- The element being scanned.
+ * @return {Boolean}
+ */
+Visuals.prototype.isBeginningBracket = function ($element) {
+  return ['<', '[', '{', '('].indexOf($element.text()) > -1;
+};
+
+/**
+ * Ending Locater
+ *
+ * Locates the ending of a surrounding block character within a row.
+ *
+ * @param  {Element} $element -- The current element in suspicion.
+ * @return {Element}
+ */
+Visuals.prototype.locateEnding = function ($element) {
+  const $row  = $element.parent();
+  const index = this.endingBracketLocation($row.text());
+
+  // If the row does not have the ending, return itself.
+  if (index === -1) {
+    return $element;
+  }
+
+  // Otherwise, return all the grouped elements.
+  return $row.find('> span').slice($element.index(), index + 1);
+};
+
+/**
  * Processor
  *
  * Processes the selected character(s) and determines what to do.
  */
 Visuals.prototype.processInput = function () {
+  const $exact      = $('[data-exact="true"]');
   const password    = this.terminal.getPassword();
-  const $population = this.getPopulation($('[data-exact="true"]'));
+  const $population = this.getPopulation($exact);
 
-  if ($population.is('[data-surround]') && $population.length > 1) {
+  if (this.isBeginningBracket($exact) && $population.length > 1) {
     let output = '';
 
     if ($population.is('[data-replenishes]')) {
@@ -280,8 +334,8 @@ Visuals.prototype.processInput = function () {
 
     // Remove this from being selected again.
     $population
-      .text('.')
-      .removeAttr('data-surround')
+      .attr('data-skip', true)
+      .removeAttr('data-replenishes')
       .removeClass('is-hover');
   }
 
