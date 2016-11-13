@@ -5,15 +5,22 @@
 'use strict';
 
 module.exports = function (grunt) {
+  // Load all tasks from package.json.
+  require('load-grunt-tasks')(grunt);
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    minified: 'terminal-<%= pkg.version %>.min.js',
+    terminal: {
+      tmp: 'js/tmp/terminal-<%= pkg.version %>.js',
+      min: 'js/terminal-<%= pkg.version %>.min.js',
+      src: 'js/src/*.js'
+    },
 
     babel: {
       default: {
         files: {
-          'js/<%= minified %>': ['js/<%= minified %>']
+          '<%= terminal.tmp %>': ['<%= terminal.tmp %>']
         },
 
         options: {
@@ -37,10 +44,15 @@ module.exports = function (grunt) {
       }
     },
 
+    clean: {
+      prod: ['./css/*.min.css*', './js/terminal-*.min.js'],
+      temp: ['./js/tmp']
+    },
+
     concat: {
       default: {
-        src:  ['js/src/*js'],
-        dest: 'js/<%= minified %>',
+        src:  ['<%= terminal.src %>'],
+        dest: '<%= terminal.tmp %>',
         options: {
           // Remove `module.exports` at the bottom for the browser.
           process: function (src) {
@@ -89,7 +101,7 @@ module.exports = function (grunt) {
 
       terminal: {
         files: {
-          'css/terminal.min.css': 'css/terminal/terminal.less'
+          'css/terminal-<%= pkg.version %>.min.css': 'css/terminal/terminal.less'
         }
       }
     },
@@ -130,7 +142,7 @@ module.exports = function (grunt) {
     uglify: {
       default: {
         files: {
-          'js/<%= minified %>': ['js/<%= minified %>']
+          '<%= terminal.min %>': ['<%= terminal.tmp %>']
         },
 
         options: {
@@ -175,13 +187,57 @@ module.exports = function (grunt) {
     }
   });
 
-  require('load-grunt-tasks')(grunt);
+  // Check ourself. Make sure we're good.
+  grunt.registerTask('default', 'jshint:grunt');
 
-  grunt.registerTask('compile', ['less', 'scripts']);
-  grunt.registerTask('dev',     ['http-server', 'browserSync', 'watch']);
-  grunt.registerTask('lint',    ['jshint:scripts', 'lesslint']);
-  grunt.registerTask('self',    ['jshint:grunt']);
-  grunt.registerTask('scripts', ['concat', 'babel', 'uglify']);
+  // Start up a local development session.
+  grunt.registerTask('dev', [
+    // Start a HTTP server.
+    'http-server',
 
-  grunt.registerTask('default', ['lint', 'compile']);
+    // Just make web development easier.
+    'browserSync',
+
+    // Watch specific files, execute specific tasks.
+    'watch'
+  ]);
+
+  // Check to see if our code is correct.
+  grunt.registerTask('lint', [
+    // Check all LESS files.
+    'lesslint',
+
+    // Check all JavaScript files (excludes Gruntfile.js)
+    'jshint:scripts'
+  ]);
+
+  // Compile and create external assets for production server.
+  grunt.registerTask('prod', [
+    // Clean out old files.
+    'clean:prod',
+
+    // Compile LESS files into CSS.
+    'less',
+
+    // Execute the JavaScript file workflow.
+    'scripts',
+
+    // Clean out temp JavaScript.
+    'clean:temp'
+  ]);
+
+  // Workflow for JavaScript files.
+  grunt.registerTask('scripts', [
+    // Concatenate files together.
+    'concat',
+
+    // Convert to pre-ES6 syntax for uglify.
+    'babel',
+
+    // Minify and obfuscate code.
+    'uglify',
+
+    // Clean out temp JavaScript/
+    'clean:temp'
+  ]);
 };

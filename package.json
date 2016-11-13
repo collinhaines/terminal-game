@@ -10,8 +10,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "grunt compile",
     "lint": "grunt lint",
+    "prod": "grunt prod",
     "test": "mocha"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
     "chai": "^3.5.0",
     "grunt-babel": "^6.0.0",
     "grunt-browser-sync": "^2.2.0",
+    "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-uglify": "^2.0.0",
