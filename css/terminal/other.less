@@ -13,7 +13,7 @@ body {
   color: #20C20E;
 
   .fixed-width {
-    width: 800px;
+    width: 775px;
   }
 
   .attempt {
@@ -24,5 +24,19 @@ body {
     margin-right: 5px;
 
     background-color: #139705;
+  }
+
+  .small-screen {
+    display: none;
+  }
+
+  @media (max-width: 775px) {
+    .fixed-width {
+      display: none;
+    }
+
+    .small-screen {
+      display: block;
+    }
   }
 }
