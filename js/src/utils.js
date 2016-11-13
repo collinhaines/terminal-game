@@ -1,5 +1,5 @@
 /**
- * utils.js v0.1.0
+ * utils.js v0.2.0
  * Copyright (c) 2016. Collin Haines.
  * Licensed under MIT (https://github.com/collinhaines/terminal-game/blob/master/LICENSE)
  */
