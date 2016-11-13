@@ -14,6 +14,18 @@ function Renderer() {
 }
 
 /**
+ * Determiner
+ *
+ * Determines if the given string has letters within it.
+ *
+ * @param  {String}  text -- The string to search.
+ * @return {Boolean}
+ */
+Renderer.prototype.isText = function (text) {
+  return text.match(/[a-z]/i) !== null;
+};
+
+/**
  * Printer
  *
  * Writes text to the output column while deleting the upper-most `<p>` element
@@ -114,10 +126,14 @@ Renderer.prototype.renderPointers = function (pointers) {
 Renderer.prototype.renderSurrounders = function (words, surrounders, rows, columns) {
   const total = this.utils.randomNumberWithinRange(1, words.length - 2);
 
+  // Iterate through the amount of blocks.
   for (let i = 0; i < total; i++) {
-    const row        = this.utils.randomNumberWithinRange(0, (rows * 2));
-    const surrounder = this.utils.randomNumberWithinRange(0, surrounders.length);
+    let   start = this.utils.randomNumberWithinRange(0, columns - 1);
+    let   stop  = this.utils.randomNumberWithinRange(start + 1, columns);
+    const row   = this.utils.randomNumberWithinRange(0, (rows * 2));
+    const block = this.utils.randomNumberWithinRange(0, surrounders.length);
 
+    // Determine what row within what column this is going in.
     let $row = '';
     if (row < rows) {
       $row = $('#text-1 > div:eq(' + row + ')');
@@ -125,28 +141,40 @@ Renderer.prototype.renderSurrounders = function (words, surrounders, rows, colum
       $row = $('#text-2 > div:eq(' + (row - rows) + ')');
     }
 
-    if ($row.text().match(/[a-z]/i)) {
-      i--;
+    const text = $row.text();
 
-      // TODO: Allow for surrounding characters to appear near words.
-
-      continue;
-    } else {
-      const start = this.utils.randomNumberWithinRange(0, columns - 1);
-      const stop  = this.utils.randomNumberWithinRange(start + 1, columns);
-
-      for (let x = start; x <= stop; x++) {
-        const $span = $row.find('> span:eq(' + x + ')');
-
-        if (x === start) {
-          $span.text(surrounders[surrounder].substring(0, 1));
-
-          if (i === 0) {
-            $span.attr('data-replenishes', true);
-          }
-        } else if (x === stop) {
-          $span.text(surrounders[surrounder].substring(1, 2));
+    // Determine if the row has letters within it.
+    if (this.isText(text)) {
+      // Locate all letter indexes.
+      let indexes = [];
+      for (let i = 0; i < text.length; i++) {
+        if (this.isText(text.charAt(i))) {
+          indexes.push(i);
         }
+      }
+
+      // Attempt to find a new start location.
+      while (indexes.indexOf(start) > -1) {
+        start = this.utils.randomNumberWithinRange(0, columns - 1);
+      }
+
+      // Attempt to find a new stop location.
+      while (indexes.indexOf(stop) > -1) {
+        stop = this.utils.randomNumberWithinRange(start + 1, columns);
+      }
+    }
+
+    for (let x = start; x <= stop; x++) {
+      const $span = $row.find('> span:eq(' + x + ')');
+
+      if (x === start) {
+        $span.text(surrounders[block].substring(0, 1));
+
+        if (i === 0) {
+          $span.attr('data-replenishes', true);
+        }
+      } else if (x === stop) {
+        $span.text(surrounders[block].substring(1, 2));
       }
     }
   }

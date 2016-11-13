@@ -172,7 +172,7 @@ Visuals.prototype.attachEventListeners = function () {
 /**
  * Ending Determiner
  *
- * Determines where within a given text that an ending bracket is located.
+ * Determines the ending bracket is located based on the beginning bracket.
  *
  * @param  {String} text -- The text to search.
  * @return {Integer}
@@ -180,9 +180,13 @@ Visuals.prototype.attachEventListeners = function () {
 Visuals.prototype.endingBracketLocation = function (text) {
   const brackets = ['>', ']', '}', ')'];
 
-  for (let i = 0; i < brackets.length; i++) {
-    if (text.indexOf(brackets[i]) > -1) {
-      return text.indexOf(brackets[i]);
+  // Run through each character within the text, cross-reference with all
+  // ending brackets.
+  for (let i = 0; i < text.length; i++) {
+    for (let x = 0; x < brackets.length; x++) {
+      if (text.charAt(i) === brackets[x]) {
+        return i;
+      }
     }
   }
 
@@ -290,7 +294,7 @@ Visuals.prototype.processInput = function () {
   if (this.isBeginningBracket($exact) && $population.length > 1) {
     let output = '';
 
-    if ($population.is('[data-replenishes]')) {
+    if ($exact.is('[data-replenishes]')) {
       // Replenish attempts, internally.
       this.terminal.replenishAttempts();
 
@@ -329,7 +333,7 @@ Visuals.prototype.processInput = function () {
       output = 'Dud removed.';
     }
 
-    this.renderer.print($population.text());
+    this.renderer.print($population.text().toUpperCase());
     this.renderer.print(output);
 
     // Remove just the multiple items of hover.
@@ -342,7 +346,7 @@ Visuals.prototype.processInput = function () {
       .removeAttr('data-replenishes');
   }
 
-  if ($population.is('[data-word]')) {
+  if ($exact.is('[data-word]')) {
     if ($population.text() === password) {
       // TODO: Something better.
       this.renderer.print($population.text().toUpperCase());
