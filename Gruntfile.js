@@ -22,6 +22,21 @@ module.exports = function (grunt) {
       }
     },
 
+    browserSync: {
+      default: {
+        bsFiles: {
+          src: ['css/*.min.css', 'js/*.min.js', '*.html']
+        },
+
+        options: {
+          open:      false,
+          proxy:     'localhost:8080',
+          notify:    true,
+          watchTask: true
+        }
+      }
+    },
+
     concat: {
       default: {
         src:  ['js/src/*js'],
@@ -35,20 +50,12 @@ module.exports = function (grunt) {
       }
     },
 
-    concurrent: {
-      default: {
-        tasks: ['http-server', 'watch'],
-        options: {
-          logConcurrentOutput: true
-        }
-      }
-    },
-
     'http-server': {
       default: {
-        host: 'localhost',
-        port: 8080,
-        root: './'
+        host:            'localhost',
+        port:            8080,
+        root:            './',
+        runInBackground: true
       }
     },
 
@@ -171,7 +178,7 @@ module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.registerTask('compile', ['less', 'scripts']);
-  grunt.registerTask('dev',     ['concurrent']);
+  grunt.registerTask('dev',     ['http-server', 'browserSync', 'watch']);
   grunt.registerTask('lint',    ['jshint:scripts', 'lesslint']);
   grunt.registerTask('self',    ['jshint:grunt']);
   grunt.registerTask('scripts', ['concat', 'babel', 'uglify']);
