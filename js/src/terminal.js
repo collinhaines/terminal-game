@@ -20,28 +20,6 @@ function Terminal() {
   this.attempts = 4;
   this.password = '';
 
-  // Initialize the special characters.
-  // TODO: Include surrounding characters without creating
-  //       false positives on surrounding statements.
-  this.characters = [
-    ',',  '.',  '/',
-    '!',  '%',  '&',
-    '-',  '+',  '=',
-    '?',  '$',  '*',
-    '^',  ';',  ':',
-    '@',  '#',  '"',
-    '`',  '~',  '|',
-    '_',  '\'', '\\'
-  ];
-
-  // Initialize the surrounding characters.
-  this.surrounders = [
-    '<>',
-    '[]',
-    '{}',
-    '()'
-  ];
-
   // Generate the difficulty.
   // TODO: More refined difficulty settings.
   this.difficulty = '';
@@ -170,10 +148,6 @@ Terminal.prototype.getAttempts = function () {
   return this.attempts;
 };
 
-Terminal.prototype.getCharacters = function () {
-  return this.characters;
-};
-
 Terminal.prototype.getColumns = function () {
   return this.columns;
 };
@@ -184,10 +158,6 @@ Terminal.prototype.getRows = function () {
 
 Terminal.prototype.getPassword = function () {
   return this.password;
-};
-
-Terminal.prototype.getSurrounders = function () {
-  return this.surrounders;
 };
 
 Terminal.prototype.getWords = function () {

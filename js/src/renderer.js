@@ -11,6 +11,28 @@
  */
 function Renderer() {
   this.utils = '';
+
+  // Initialize the block characters.
+  this.blocks = [
+    '<>',
+    '[]',
+    '{}',
+    '()'
+  ];
+
+  // Initialize the special characters.
+  // TODO: Include surrounding characters without creating
+  //       false positives on surrounding statements.
+  this.characters = [
+    ',',  '.',  '/',
+    '!',  '%',  '&',
+    '-',  '+',  '=',
+    '?',  '$',  '*',
+    '^',  ';',  ':',
+    '@',  '#',  '"',
+    '`',  '~',  '|',
+    '_',  '\'', '\\'
+  ];
 }
 
 /**
@@ -59,21 +81,20 @@ Renderer.prototype.renderAttempts = function (attempts) {
  *
  * Renders a random character for `rows * columns` amount within a given row. *
  *
- * @param {Element} $element   -- The document element.
- * @param {Array}   characters -- The array of random characters.
- * @param {Integer} rows       -- The amount of rows to render in.
- * @param {Integer} columns    -- The amount of columns to render in.
+ * @param {Element} $element -- The document element.
+ * @param {Integer} rows     -- The amount of rows to render in.
+ * @param {Integer} columns  -- The amount of columns to render in.
  */
-Renderer.prototype.renderCharacters = function ($element, characters, rows, columns) {
+Renderer.prototype.renderCharacters = function ($element, rows, columns) {
   for (let i = 0; i < rows; i++) {
     $element.append('<div data-row="' + i + '"></div>');
 
     for (let x = 0; x < columns; x++) {
-      const number = this.utils.randomNumberWithinRange(0, characters.length);
+      const number = this.utils.randomNumberWithinRange(0, this.characters.length);
 
       $element
         .find('> div:last-child')
-        .append('<span data-column="' + x + '">' + characters[number] + '</span>');
+        .append('<span data-column="' + x + '">' + this.characters[number] + '</span>');
     }
   }
 };
@@ -118,12 +139,11 @@ Renderer.prototype.renderPointers = function (pointers) {
  * Following rule #3, this renders 1 to `n - 2` surrounding character blocks
  * randomly within the board.
  *
- * @param {Array}   words       -- All words from Terminal.
- * @param {Array}   surrounders -- The surrounding character blocks.
- * @param {Integer} rows        -- The amount of rows.
- * @param {Integer} columns     -- The amount of columns.
+ * @param {Array}   words   -- All words from Terminal.
+ * @param {Integer} rows    -- The amount of rows.
+ * @param {Integer} columns -- The amount of columns.
  */
-Renderer.prototype.renderSurrounders = function (words, surrounders, rows, columns) {
+Renderer.prototype.renderSurrounders = function (words, rows, columns) {
   const total = this.utils.randomNumberWithinRange(1, words.length - 2);
 
   // Iterate through the amount of blocks.
@@ -131,7 +151,7 @@ Renderer.prototype.renderSurrounders = function (words, surrounders, rows, colum
     let   start = this.utils.randomNumberWithinRange(0, columns - 1);
     let   stop  = this.utils.randomNumberWithinRange(start + 1, columns);
     const row   = this.utils.randomNumberWithinRange(0, (rows * 2));
-    const block = this.utils.randomNumberWithinRange(0, surrounders.length);
+    const block = this.utils.randomNumberWithinRange(0, this.blocks.length);
 
     // Determine what row within what column this is going in.
     let $row = '';
@@ -168,13 +188,13 @@ Renderer.prototype.renderSurrounders = function (words, surrounders, rows, colum
       const $span = $row.find('> span:eq(' + x + ')');
 
       if (x === start) {
-        $span.text(surrounders[block].substring(0, 1));
+        $span.text(this.blocks[block].substring(0, 1));
 
         if (i === 0) {
           $span.attr('data-replenishes', true);
         }
       } else if (x === stop) {
-        $span.text(surrounders[block].substring(1, 2));
+        $span.text(this.blocks[block].substring(1, 2));
       }
     }
   }
