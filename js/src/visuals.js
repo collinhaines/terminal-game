@@ -317,11 +317,12 @@ Visuals.prototype.processInput = function () {
           // Remove the word from being able to be picked again.
           words.splice(number, 1);
 
+          // Set the words back in the terminal class.
+          this.terminal.setWords(words);
+
           break;
         }
 
-        // Set the words back in the terminal class.
-        this.terminal.setWords(words);
       }
 
       // Remove the word visually.
