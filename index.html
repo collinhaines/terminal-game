@@ -83,6 +83,10 @@
     visuals.setRenderer(renderer);
     visuals.setUtils(utils);
 
+    console.info('Generating difficulty.');
+
+    terminal.setDifficulty(terminal.generateDifficulty());
+
     console.info('Rendering pointers.');
 
     // Render the pointers.
@@ -102,15 +106,17 @@
     console.info('Generating words.');
 
     // Generate words.
-    terminal.generateWords($.ajax({
+    const ajax = $.ajax({
       async: false,
       url:   'words.json'
-    }).responseJSON);
+    });
+
+    terminal.setWords(terminal.generateWords(ajax.responseJSON));
 
     console.info('Generating password.');
 
     // Generate the password.
-    terminal.generatePassword();
+    terminal.setPassword(terminal.generatePassword());
 
     console.info('Rendering words.');
 

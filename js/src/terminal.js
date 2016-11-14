@@ -10,31 +10,34 @@
  * Constructor
  */
 function Terminal() {
-  // Declare the amount of rows and columns.
-  this.rows    = 16;
-  this.columns = 12;
-
-  // Initialize class-wide variables.
-  this.utils    = '';
-  this.words    = [];
-  this.attempts = 4;
-  this.password = '';
-
-  // Generate the difficulty.
-  // TODO: More refined difficulty settings.
+  this.rows       = 16;
+  this.utils      = '';
+  this.words      = [];
+  this.columns    = 12;
+  this.attempts   = 4;
+  this.password   = '';
   this.difficulty = '';
-  switch (Math.floor(Math.random() * 3)) {
-    case 0:
-      this.difficulty = 'four';
-      break;
-    case 1:
-      this.difficulty = 'six';
-      break;
-    case 2:
-      this.difficulty = 'eight';
-      break;
-  }
 }
+
+/**
+ * Pointer Converter
+ *
+ * Converts an integer to a hexadecimal string.
+ *
+ * @param  {Integer} pointer -- The pointer to convert.
+ * @return {String}
+ */
+Terminal.prototype.convertPointerToHexadecimal = function (pointer) {
+  // Convert to hexadecimal.
+  const convert = pointer.toString(16).toUpperCase();
+
+  // Grab the last three characters.
+  if (convert.length > 3) {
+    return convert.substring(convert.length - 3, convert.length);
+  }
+
+  return convert;
+};
 
 /**
  * Decrease
@@ -42,18 +45,66 @@ function Terminal() {
  * Decreases attempts by 1.
  */
 Terminal.prototype.decreaseAttempt = function () {
-  this.attempts = this.attempts - 1;
+  this.setAttempts(this.getAttempts() - 1);
+};
+
+/**
+ * Difficulty Generator
+ *
+ * Generates the difficulty by random.
+ *
+ * @todo More refined difficulty settings.
+ * @return {String}
+ */
+Terminal.prototype.generateDifficulty = function () {
+  const type = Math.floor(Math.random() * 3);
+
+  if (type === 0) {
+    return 'four';
+  } else if (type === 1) {
+    return 'six';
+  } else if (type === 2) {
+    return 'eight';
+  }
+};
+
+/**
+ * Pointer Generator
+ *
+ * Generates an initial pointer the board will start at.
+ *
+ * @return {Integer}
+ */
+Terminal.prototype.generateInitialPointer = function () {
+  let pointer = 0;
+  let stopper = 0;
+
+  // If the pointer is below 256, the length of `.toString(16)` is 2.
+  // Why? Go to France around the year 770 and ask them.
+  while (pointer < 256) {
+    pointer = Math.floor(Math.random() * parseInt(Math.random().toString().substring(2, 6), 10));
+
+    stopper++;
+
+    if (stopper === 20) {
+      console.warn('Terminal.prototype.generateInitialPointer stopper');
+
+      break;
+    }
+  }
+
+  return pointer;
 };
 
 /**
  * Password Generator
  *
  * Generates a password randomly from the set of words.
+ *
+ * @return {String}
  */
 Terminal.prototype.generatePassword = function () {
-  const number = this.utils.randomNumberWithinRange(0, this.words.length);
-
-  this.password = this.words[number];
+  return this.words[this.utils.randomNumberWithinRange(0, this.words.length)];
 };
 
 /**
@@ -63,49 +114,31 @@ Terminal.prototype.generatePassword = function () {
  * this creates a random hexadecimal location, and increments it `this.rows * 2`
  * times while keeping the traditional ending seen in the games.
  *
+ * Within the Fallout series, it appears the following ending starts the loop:
+ * - Fallout 3 has the first pointer end in 'C'.
+ * - Fallout 4 has the first pointer end in '0'.
+ * - Fallout: NV has the first pointer end randomly.
+ *
  * @return {Array}
  */
 Terminal.prototype.generatePointers = function () {
   // Generate pointers
-  let pointer  = 0;
+  let pointer  = this.generateInitialPointer();
   let pointers = [];
 
-  // If the pointer is below 256, the length of `.toString(16)` is 2.
-  // Why? Go to France around the year 770 and ask them.
-  while (pointer < 256) {
-    // We're going truly random here.
-    pointer = Math.floor(Math.random() * parseInt(Math.random().toString().substring(2, 6), 10));
-  }
-
   for (let i = 0, loop = 0; i < (this.rows * 2); i++, loop++, pointer++) {
-    // Convert to hexadecimal.
-    let convert = pointer.toString(16).toUpperCase();
+    let convert = this.convertPointerToHexadecimal(pointer);
 
-    // Grab the last three characters.
-    if (convert.length > 3) {
-      convert = convert.substring(convert.length - 3, convert.length);
-    }
-
-    // There's probably a reason why every hacking terminal in Fallout have
-    // these constant endings.
-    //
-    // Fallout 4 starts with 0.
-    // Fallout 3 starts with C.
-    // Fallout: NV seems to start randomly.
-    switch (loop) {
-      case 0:
-        convert = convert + '0';
-        break;
-      case 1:
-        convert = convert + 'C';
-        break;
-      case 2:
-        convert = convert + '8';
-        break;
-      case 3:
-        loop    = -1;
-        convert = convert + '4';
-        break;
+    // Attach the ending character.
+    if (loop === 0) {
+      convert = convert + '0';
+    } else if (loop === 1) {
+      convert = convert + 'C';
+    } else if (loop === 2) {
+      convert = convert + '8';
+    } else if (loop === 3) {
+      loop    = -1;
+      convert = convert + '4';
     }
 
     pointers.push('0x' + convert);
@@ -120,16 +153,19 @@ Terminal.prototype.generatePointers = function () {
  * Given a huge list of words, generate a random amount of words from
  * said given list.
  *
- * @param {Object} response -- The JSON object from `words.json`.
+ * @param  {Object} response -- The JSON object from `words.json`.
+ * @return {Array}
  */
 Terminal.prototype.generateWords = function (response) {
-  const amount = this.utils.randomNumberWithinRange(5, 10);
+  let words = [];
 
-  for (let i = 0; i < amount; i++) {
+  for (let i = 0; i < this.utils.randomNumberWithinRange(5, 10); i++) {
     const index = this.utils.randomNumberWithinRange(0, response[this.difficulty].length);
 
-    this.words.push(response[this.difficulty][index]);
+    words.push(response[this.difficulty][index]);
   }
+
+  return words;
 };
 
 /**
@@ -138,7 +174,7 @@ Terminal.prototype.generateWords = function (response) {
  * Replenishes attempts to 4.
  */
 Terminal.prototype.replenishAttempts = function () {
-  this.attempts = 4;
+  this.setAttempts(4);
 };
 
 /**
@@ -150,6 +186,10 @@ Terminal.prototype.getAttempts = function () {
 
 Terminal.prototype.getColumns = function () {
   return this.columns;
+};
+
+Terminal.prototype.getDifficulty = function () {
+  return this.difficulty;
 };
 
 Terminal.prototype.getRows = function () {
@@ -167,6 +207,18 @@ Terminal.prototype.getWords = function () {
 /**
  * Mutators
  */
+Terminal.prototype.setAttempts = function (attempts) {
+  this.attempts = attempts;
+};
+
+Terminal.prototype.setDifficulty = function (difficulty) {
+  this.difficulty = difficulty;
+};
+
+Terminal.prototype.setPassword = function (password) {
+  this.password = password;
+};
+
 Terminal.prototype.setWords = function (words) {
   this.words = words;
 };
@@ -174,6 +226,5 @@ Terminal.prototype.setWords = function (words) {
 Terminal.prototype.setUtils = function (utils) {
   this.utils = utils;
 };
-
 
 module.exports = Terminal;

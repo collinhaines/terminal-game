@@ -36,10 +36,6 @@ describe('Terminal', () => {
     it('has no initial password', () => {
       chai.assert.equal('', terminal.getPassword());
     });
-
-    it('is either four, six, or eight difficulty', () => {
-      chai.assert.oneOf(terminal.difficulty, ['four', 'six', 'eight']);
-    });
   });
 
   describe('attempts', () => {
@@ -56,6 +52,14 @@ describe('Terminal', () => {
     });
   });
 
+  describe('password', () => {
+    it('is now randomly generated', () => {
+      terminal.setDifficulty(terminal.generateDifficulty());
+
+      chai.assert.oneOf(terminal.getDifficulty(), ['four', 'six', 'eight']);
+    });
+  });
+
   describe('pointers', () => {
     it('can be generated', () => {
       chai.assert.notEqual([], terminal.generatePointers());
@@ -64,13 +68,15 @@ describe('Terminal', () => {
 
   describe('words', () => {
     it('has words now', () => {
-      terminal.generateWords(JSON.parse(require('fs').readFileSync(require('path').resolve(__dirname, '../words.json')).toString()));
+      const response = JSON.parse(require('fs').readFileSync(require('path').resolve(__dirname, '../words.json')).toString());
+
+      terminal.setWords(terminal.generateWords(response));
 
       chai.assert.notEqual(0, terminal.getWords().length);
     });
 
     it('has password now', () => {
-      terminal.generatePassword();
+      terminal.setPassword(terminal.generatePassword());
 
       chai.assert.notEqual('', terminal.getPassword());
     });
