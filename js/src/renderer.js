@@ -173,14 +173,34 @@ Renderer.prototype.renderSurrounders = function (words, rows, columns) {
         }
       }
 
+      let stopper = 0;
+
       // Attempt to find a new start location.
       while (indexes.indexOf(start) > -1 || indexes.indexOf(start + 1) > -1) {
         start = this.utils.randomNumberWithinRange(0, columns - 1);
+
+        stopper++;
+
+        if (stopper === 20) {
+          console.warn('Renderer.prototype.renderSurrounders (1) stopper');
+
+          break;
+        }
       }
+
+      stopper = 0;
 
       // Attempt to find a new stop location.
       while (indexes.indexOf(stop) > -1) {
         stop = this.utils.randomNumberWithinRange(start + 1, columns);
+
+        stopper++;
+
+        if (stopper === 20) {
+          console.warn('Renderer.prototype.renderSurrounders (2) stopper');
+
+          break;
+        }
       }
     }
 
@@ -214,6 +234,7 @@ Renderer.prototype.renderWords = function (words, rows, columns) {
 
   for (let i = 0; i < words.length; i++) {
     let random = -1;
+    let stopper = 0;
 
     while (true) {
       random = this.utils.randomNumberWithinRange(0, (rows * columns * 2) - words[i].length);
@@ -258,6 +279,14 @@ Renderer.prototype.renderWords = function (words, rows, columns) {
       // https://i.imgur.com/k4YYzDZ.jpg
       if (freeToGo) {
         occupied[random] = words[i].length;
+
+        break;
+      }
+
+      stopper++;
+
+      if (stopper === 20) {
+        console.warn('Renderer.prototype.renderWords stopper executed.');
 
         break;
       }

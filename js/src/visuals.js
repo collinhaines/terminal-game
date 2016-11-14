@@ -305,6 +305,7 @@ Visuals.prototype.processInput = function () {
       output = 'Tries reset.';
     } else {
       let words    = this.terminal.getWords();
+      let stopper  = 0;
       let removing = '';
 
       while (true) {
@@ -323,6 +324,13 @@ Visuals.prototype.processInput = function () {
           break;
         }
 
+        stopper++;
+
+        if (stopper === 20) {
+          console.warn('Visuals.prototype.processInput stopper');
+
+          break;
+        }
       }
 
       // Remove the word visually.
