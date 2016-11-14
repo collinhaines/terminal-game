@@ -178,15 +178,41 @@ Visuals.prototype.attachEventListeners = function () {
  * @return {Integer}
  */
 Visuals.prototype.endingBracketLocation = function (text) {
+  let   bracket  = '';
   const brackets = ['>', ']', '}', ')'];
+
+  switch ($('[data-exact="true"]').text()) {
+    case '<':
+      bracket = brackets[0];
+      break;
+    case '[':
+      bracket = brackets[1];
+      break;
+    case '{':
+      bracket = brackets[2];
+      break;
+    case '(':
+      bracket = brackets[3];
+      break;
+  }
+
+  const isBrace   = bracket === bracket[2];
+  const isParen   = bracket === bracket[3];
+  const isBracket = bracket === bracket[1];
+  const isGreater = bracket === bracket[0];
 
   // Run through each character within the text, cross-reference with all
   // ending brackets.
   for (let i = 0; i < text.length; i++) {
-    for (let x = 0; x < brackets.length; x++) {
-      if (text.charAt(i) === brackets[x]) {
-        return i;
-      }
+    // There has to be a better way to optimize this.
+    if (text.charAt(i) === bracket[0] && isGreater) {
+      return i;
+    } else if (text.charAt(i) === bracket[1] && isBracket) {
+      return i;
+    } else if (text.charAt(i) === bracket[2] && isBrace) {
+      return i;
+    } else if (text.charAt(i) === bracket[3] && isParen) {
+      return i;
     }
   }
 
