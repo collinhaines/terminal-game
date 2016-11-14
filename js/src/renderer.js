@@ -174,7 +174,7 @@ Renderer.prototype.renderSurrounders = function (words, rows, columns) {
       }
 
       // Attempt to find a new start location.
-      while (indexes.indexOf(start) > -1) {
+      while (indexes.indexOf(start) > -1 || indexes.indexOf(start + 1) > -1) {
         start = this.utils.randomNumberWithinRange(0, columns - 1);
       }
 
