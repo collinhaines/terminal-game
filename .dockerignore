@@ -1,0 +1,6 @@
+.git*
+LICENSE
+*.md
+node_modules
+test
+*.yml
