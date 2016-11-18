@@ -170,6 +170,28 @@ Visuals.prototype.attachEventListeners = function () {
 };
 
 /**
+ * Likeness Determiner
+ *
+ * Determines how many character-by-character matches there are in a given text
+ * when compared to the overall password.
+ *
+ * @param  {String} text -- The given text to cross-reference.
+ * @return {Integer}
+ */
+Visuals.prototype.determineLikeness = function (text) {
+  let   likeness = 0;
+  const password = this.getTerminal().getPassword();
+
+  for (let i = 0; i < text.length; i++) {
+    if (text.charAt(i) === password.charAt(i)) {
+      likeness++;
+    }
+  }
+
+  return likeness;
+};
+
+/**
  * Ending Determiner
  *
  * Determines the ending bracket is located based on the beginning bracket.
@@ -368,8 +390,8 @@ Visuals.prototype.processInput = function () {
       output = 'Dud removed.';
     }
 
-    this.renderer.print($population.text().toUpperCase());
-    this.renderer.print(output);
+    this.getRenderer().print($population.text().toUpperCase());
+    this.getRenderer().print(output);
 
     // Remove just the multiple items of hover.
     $population.removeClass('is-hover');
@@ -384,43 +406,48 @@ Visuals.prototype.processInput = function () {
   if ($exact.is('[data-word]')) {
     if ($population.text() === password) {
       // TODO: Something better.
-      this.renderer.print($population.text().toUpperCase());
-      this.renderer.print('Entry granted.');
+      this.getRenderer().print($population.text().toUpperCase());
+      this.getRenderer().print('Entry granted.');
 
       $('.text span').off('click');
       $(document).off('keydown');
     } else {
       // Decrease attempts, internally.
-      this.terminal.decreaseAttempt();
+      this.getTerminal().decreaseAttempt();
 
       // Decrease attempts, visually.
       $('#attempts > .attempt:last-child').remove();
 
-      // TODO: Does the word go away and/or clickable again in the game?
-
-      // Detect the likeness.
-      let likeness = 0;
-      for (let i = 0; i < $population.text().length; i++) {
-        if ($population.text()[i] === password[i]) {
-          likeness++;
-        }
-      }
-
       // Render the output.
-      this.renderer.print($population.text().toUpperCase());
-      this.renderer.print('Entry denied.');
-      this.renderer.print('Likeness=' + likeness);
+      this.getRenderer().print($population.text().toUpperCase());
+      this.getRenderer().print('Entry denied.');
+      this.getRenderer().print('Likeness=' + this.determineLikeness($population.text()));
 
       // Player has failed to hack into the terminal.
-      if (this.terminal.getAttempts() === 0) {
+      if (this.getTerminal().getAttempts() === 0) {
         // TODO: Something better.
-        this.renderer.print('Locked out.');
+        this.getRenderer().print('Locked out.');
 
         $('.text span').off('click');
         $(document).off('keydown');
       }
     }
   }
+};
+
+/**
+ * Accessors
+ */
+Visuals.prototype.getRenderer = function () {
+  return this.renderer;
+};
+
+Visuals.prototype.getTerminal = function () {
+  return this.terminal;
+};
+
+Visuals.prototype.getUtils = function () {
+  return this.utils;
 };
 
 /**
