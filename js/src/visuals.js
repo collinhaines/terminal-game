@@ -436,6 +436,43 @@ Visuals.prototype.processInput = function () {
 };
 
 /**
+ * Text Displayer
+ *
+ * In a visually appealing way, write the text letter-by-letter as if
+ * it were to look like an older machine typing.
+ *
+ * @reference: http://jsfiddle.net/VZvK7/
+ *
+ * @param {Element} $element -- The element that'll have the text.
+ * @param {String}  text     -- The text to be displayed.
+ * @param {Integer} index    -- The current location in the text.
+ * @param {Integer} interval -- Interval for the next text.
+ */
+Visuals.prototype.showText = function ($element, text, index, interval) {
+  if (index > text.length) {
+    console.debug('Completed rendering ' + text);
+
+    return;
+  }
+
+  // Default milliseconds for text.
+  if (interval === undefined) {
+    interval = 30;
+  }
+
+  // setTimeout loses scope definition.
+  const self = this;
+
+  // The append must be inside for the initial calls.
+  // This way the index does not have three billion callbacks.
+  setTimeout(function () {
+    $element.append(text.charAt(index++));
+
+    self.showText($element, text, index);
+  }, interval);
+};
+
+/**
  * Accessors
  */
 Visuals.prototype.getRenderer = function () {

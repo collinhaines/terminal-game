@@ -28,13 +28,11 @@
 <body>
   <div class="container main-area">
     <samp class="fixed-width center-block" id="information">
-      <p>Welcome to ROBCO Industries (TM) Termlink</p>
+      <p data-text="Welcome to ROBCO Industries (TM) Termlink"></p>
 
-      <p>Password Required</p>
+      <p data-text="Password Required"></p>
 
-      <p>Attempts Remaining:
-        <span id="attempts"></span>
-      </p>
+      <p data-text="Attempts Remaining:"></p>
     </samp>
 
     <samp class="fixed-width center-block clearfix">
@@ -92,11 +90,6 @@
     // Render the pointers.
     renderer.renderPointers(terminal.generatePointers());
 
-    console.info('Rendering attempts.');
-
-    // Render the attempts.
-    renderer.renderAttempts(terminal.getAttempts());
-
     console.info('Rendering characters.');
 
     // Render characters.
@@ -146,6 +139,29 @@
     // hooked up to a tablet.
     if (tablets.indexOf(platform.product) > -1) {
       $('<p>!! Warning !!</p><p>External Keyboard Not Found. Limited Usage Probable</p>').insertAfter($('#information > p:first-child'));
+    }
+
+    // Render introduction text.
+    $('#information > p').each(function () {
+      console.debug('Showing text ' + $(this).data('text'));
+
+      visuals.showText($(this), $(this).data('text'), 0, utils.getInterval());
+
+      utils.increaseInterval($(this).data('text').length * 30);
+    });
+
+    // Append the span after everything is done.
+    setTimeout(function () {
+      $('#information > p').last().append('<span id="attempts"></span>');
+    }, utils.getInterval());
+
+    // Render the attempts.
+    for (let i = 0; i < 4; i++) {
+      setTimeout(function () {
+        $('#attempts').append('<span class="attempt">&nbsp;</span>');
+      }, utils.getInterval());
+
+      utils.increaseInterval(50);
     }
   </script>
 </body>
