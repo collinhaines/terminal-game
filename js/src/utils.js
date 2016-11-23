@@ -22,7 +22,7 @@ function Utils() {
  * @param {Integer} increase -- How much to increase.
  */
 Utils.prototype.increaseInterval = function (increase) {
-  this.setInterval(this.interval + (increase));
+  this.setInterval(this.getInterval() + (increase));
 };
 
 /**
