@@ -87,7 +87,7 @@ Terminal.prototype.generateInitialPointer = function () {
     stopper++;
 
     if (stopper === 20) {
-      console.warn('Terminal.prototype.generateInitialPointer stopper');
+      this.utils.warner('Terminal.prototype.generateInitialPointer stopper.');
 
       break;
     }

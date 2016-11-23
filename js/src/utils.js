@@ -26,6 +26,16 @@ Utils.prototype.increaseInterval = function (increase) {
 };
 
 /**
+ * Logger
+ *
+ * @param  {String} text -- Text to log.
+ * @return {Console}
+ */
+Utils.prototype.logger = function (text) {
+  return console.log('[' + new Date().toLocaleString() + '] => ' + text);
+};
+
+/**
  * Utility function to randomly generate a number within a range.
  *
  * @param  {Integer} min -- The minimum of the range.
@@ -34,6 +44,18 @@ Utils.prototype.increaseInterval = function (increase) {
  */
 Utils.prototype.randomNumberWithinRange = function (min, max) {
   return Math.floor(Math.random() * (max - min) + min);
+};
+
+/**
+ * Warning
+ *
+ * Same as the logger, just throws a warning.
+ *
+ * @param  {String} text -- Text to log.
+ * @return {Console}
+ */
+Utils.prototype.warner = function (text) {
+  return console.warn('[' + new Date().toLocaleString() + '] => ' + text);
 };
 
 /**

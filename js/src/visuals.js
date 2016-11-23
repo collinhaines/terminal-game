@@ -375,7 +375,7 @@ Visuals.prototype.processInput = function () {
         stopper++;
 
         if (stopper === 20) {
-          console.warn('Visuals.prototype.processInput stopper');
+          this.utils.warner('Visuals.prototype.processInput stopper.');
 
           break;
         }
@@ -450,7 +450,7 @@ Visuals.prototype.processInput = function () {
  */
 Visuals.prototype.showText = function ($element, text, index, interval) {
   if (index > text.length) {
-    console.debug('Completed rendering ' + text);
+    this.utils.logger('Completed rendering ' + text);
 
     return;
   }

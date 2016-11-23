@@ -62,15 +62,13 @@
   <script src="js/platform-1.3.3.min.js"></script>
   <script src="js/terminal-0.2.0.min.js"></script>
   <script>
-    console.info('Initializing.');
-
     // Construct.
     const utils    = new Utils();
     const visuals  = new Visuals();
     const renderer = new Renderer();
     const terminal = new Terminal();
 
-    console.info('Mapping classes together.');
+    utils.logger('Mapping classes together.');
 
     // Attach exterior classes.
     renderer.setUtils(utils);
@@ -81,22 +79,22 @@
     visuals.setRenderer(renderer);
     visuals.setUtils(utils);
 
-    console.info('Generating difficulty.');
+    utils.logger('Generating difficulty.');
 
     terminal.setDifficulty(terminal.generateDifficulty());
 
-    console.info('Rendering pointers.');
+    utils.logger('Rendering pointers.');
 
     // Render the pointers.
     renderer.renderPointers(terminal.generatePointers());
 
-    console.info('Rendering characters.');
+    utils.logger('Rendering characters.');
 
     // Render characters.
     renderer.renderCharacters($('#text-1'), terminal.getRows(), terminal.getColumns());
     renderer.renderCharacters($('#text-2'), terminal.getRows(), terminal.getColumns());
 
-    console.info('Generating words.');
+    utils.logger('Generating words.');
 
     // Generate words.
     const ajax = $.ajax({
@@ -106,27 +104,27 @@
 
     terminal.setWords(terminal.generateWords(ajax.responseJSON));
 
-    console.info('Generating password.');
+    utils.logger('Generating password.');
 
     // Generate the password.
     terminal.setPassword(terminal.generatePassword());
 
-    console.info('Rendering words.');
+    utils.logger('Rendering words.');
 
     // Render the words on the board.
     renderer.renderWords(terminal.getWords(), terminal.getRows(), terminal.getColumns());
 
-    console.info('Rendering character blocks.');
+    utils.logger('Rendering character blocks.');
 
     // Render the surrounding characters.
     renderer.renderSurrounders(terminal.getWords(), terminal.getRows(), terminal.getColumns());
 
-    console.info('Rendering output column.');
+    utils.logger('Rendering output column.');
 
     // Render the output to the side of the board.
     renderer.renderOutput(terminal.getRows());
 
-    console.info('Attaching event listeners.');
+    utils.logger('Attaching event listeners.');
 
     // Create event listeners.
     visuals.attachEventListeners();
@@ -143,7 +141,7 @@
 
     // Render introduction text.
     $('#information > p').each(function () {
-      console.debug('Showing text ' + $(this).data('text'));
+      utils.logger('Showing text ' + $(this).data('text'));
 
       visuals.showText($(this), $(this).data('text'), 0, utils.getInterval());
 
@@ -163,6 +161,27 @@
 
       utils.increaseInterval(50);
     }
+
+    /**
+     * So basically,
+     *
+     * - Generate pointers   - DONE
+     * - Generate characters - Start mirror-array of board
+     * - Generate words      - Input mirror
+     * - Generate blocks     - Input mirror
+     *
+     * Since is each within its own <div> or <span>,
+     * render the way we read, top left to bottom right.
+     *
+     * for i < terminal.rows
+     *   showText:
+     *     - pointer-1 [i]
+     *     - text-1 [i]
+     *     - pointer-2 [i]
+     *     - text-2 [i]
+     *
+     * Then, render the output column as done already.
+     */
   </script>
 </body>
 </html>

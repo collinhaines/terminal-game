@@ -182,7 +182,7 @@ Renderer.prototype.renderSurrounders = function (words, rows, columns) {
         stopper++;
 
         if (stopper === 20) {
-          console.warn('Renderer.prototype.renderSurrounders (1) stopper');
+          this.utils.warner('Renderer.prototype.renderSurrounders (1) stopper.');
 
           break;
         }
@@ -197,7 +197,7 @@ Renderer.prototype.renderSurrounders = function (words, rows, columns) {
         stopper++;
 
         if (stopper === 20) {
-          console.warn('Renderer.prototype.renderSurrounders (2) stopper');
+          this.utils.warner('Renderer.prototype.renderSurrounders (2) stopper.');
 
           break;
         }
@@ -286,7 +286,7 @@ Renderer.prototype.renderWords = function (words, rows, columns) {
       stopper++;
 
       if (stopper === 20) {
-        console.warn('Renderer.prototype.renderWords stopper executed.');
+        this.utils.warner('Renderer.prototype.renderWords stopper.');
 
         break;
       }
