@@ -463,6 +463,9 @@ Visuals.prototype.showText = function ($element, text, index, interval) {
   // setTimeout loses scope definition.
   const self = this;
 
+  // Assure text is a string.
+  text = text.toString();
+
   // The append must be inside for the initial calls.
   // This way the index does not have three billion callbacks.
   setTimeout(function () {
