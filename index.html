@@ -32,7 +32,11 @@
 
       <p data-text="Password Required"></p>
 
-      <p data-text="Attempts Remaining:"></p>
+      <p id="info-attempt">
+        <span data-text="Attempts Remaining:"></span>
+
+        <span id="attempts"></span>
+      </p>
     </samp>
 
     <samp class="fixed-width center-block clearfix">
@@ -82,10 +86,21 @@
     terminal.setWords(terminal.generateWords(ajax.responseJSON));
     terminal.setPassword(terminal.generatePassword());
 
+    // Render introduction text.
+    $('#information > p[data-text]').each(function () {
+      utils.frontRender($(this), $(this).data('text'));
     });
 
+    utils.frontRender($('#info-attempt > span[data-text]'), $('#info-attempt > span[data-text]').data('text'));
 
+    // Render the attempts.
+    for (let i = 0; i < 4; i++) {
+      setTimeout(function () {
+        $('#attempts').append('<span class="attempt">&nbsp;</span>');
+      }, utils.getInterval());
 
+      utils.increaseInterval(50);
+    }
 
 
 
@@ -107,28 +122,7 @@
       $('<p>!! Warning !!</p><p>External Keyboard Not Found. Limited Usage Probable</p>').insertAfter($('#information > p:first-child'));
     }
 
-    // Render introduction text.
-    $('#information > p').each(function () {
-      visuals.showText($(this), $(this).data('text'), 0, utils.getInterval());
 
-      utils.increaseInterval($(this).data('text').length * 30);
-    });
-
-    // Wait 10 milliseconds before rendering attempt blocks.
-    utils.increaseInterval(10);
-
-    // Append the span after everything is done.
-    setTimeout(function () {
-      $('#information > p').last().append('<span id="attempts"></span>');
-    }, utils.getInterval());
-
-    // Render the attempts.
-    for (let i = 0; i < 4; i++) {
-      setTimeout(function () {
-        $('#attempts').append('<span class="attempt">&nbsp;</span>');
-      }, utils.getInterval());
-
-      utils.increaseInterval(50);
     }
   </script>
 </body>

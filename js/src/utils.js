@@ -18,6 +18,18 @@ function Utils() {
 }
 
 /**
+ * Render Helper
+ *
+ * Renders text on the board and increases the interval accordingly.
+ *
+ * @param {Element} $element -- Element the text is going in.
+ * @param {String}  text     -- Text the element will have.
+ */
+Utils.prototype.frontRender = function ($element, text) {
+  this.visuals.showText($element, text, 0, this.interval);
+
+  this.increaseInterval(text.length * 30);
+};
  * Interval Increase
  *
  * Increases the interval based on the given integer. The increase is within
