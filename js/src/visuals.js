@@ -370,7 +370,7 @@ Visuals.prototype.processInput = function () {
       let removing = '';
 
       while (true) {
-        const number = this.utils.randomNumberWithinRange(0, words.length);
+        const number = this.utils.pickRange(0, words.length);
         // Pick a random word.
         removing = words[number];
 

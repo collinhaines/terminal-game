@@ -69,7 +69,7 @@ Terminal.prototype.generateBoard = function () {
     let symbols = [];
 
     for (let i = 0; i < this.columns; i++) {
-      const random = this.utils.randomNumberWithinRange(0, this.characters.length);
+      const random = this.utils.pickRange(0, this.characters.length);
 
       symbols.push(this.characters[random]);
     }
@@ -135,7 +135,7 @@ Terminal.prototype.generateDifficulty = function () {
  * Generates a password randomly from the set of words.
  */
 Terminal.prototype.generatePassword = function () {
-  const random = this.utils.randomNumberWithinRange(0, this.words.length);
+  const random = this.utils.pickRange(0, this.words.length);
 
   this.setPassword(this.words[random]);
 };
@@ -191,8 +191,8 @@ Terminal.prototype.generatePointers = function () {
 Terminal.prototype.generateWords = function (response) {
   let words = [];
 
-  for (let i = 0; i < this.utils.randomNumberWithinRange(5, 10); i++) {
-    const index = this.utils.randomNumberWithinRange(0, response[this.difficulty].length);
+  for (let i = 0; i < this.utils.pickRange(5, 10); i++) {
+    const index = this.utils.pickRange(0, response[this.difficulty].length);
 
     words.push(response[this.difficulty][index]);
   }
@@ -208,16 +208,16 @@ Terminal.prototype.generateWords = function (response) {
  */
 Terminal.prototype.renderBlocks = function () {
   let   output = [];
-  const total  = this.utils.randomNumberWithinRange(1, this.words.length - 2);
+  const total  = this.utils.pickRange(1, this.words.length - 2);
 
   // Iterate through the amount of blocks.
   for (let i = 0; i < total; i++) {
-    let start = this.utils.randomNumberWithinRange(0, this.columns - 1);
-    let stop  = this.utils.randomNumberWithinRange(start + 1, this.columns);
+    let start = this.utils.pickRange(0, this.columns - 1);
+    let stop  = this.utils.pickRange(start + 1, this.columns);
 
-    const row   = this.utils.randomNumberWithinRange(0, (this.rows * 2));
+    const row   = this.utils.pickRange(0, (this.rows * 2));
     const text  = this.board[row].join('');
-    const block = this.utils.randomNumberWithinRange(0, this.blocks.length);
+    const block = this.utils.pickRange(0, this.blocks.length);
 
     if (this.utils.hasText(text)) {
       let indexes = [];
@@ -232,7 +232,7 @@ Terminal.prototype.renderBlocks = function () {
 
       // Attempt to find a new start location.
       while (indexes.indexOf(start) > -1 || indexes.indexOf(start + 1) > -1) {
-        start = this.utils.randomNumberWithinRange(0, this.columns - 1);
+        start = this.utils.pickRange(0, this.columns - 1);
 
         if (stopper++ === 20) {
           this.utils.warner('Terminal.prototype.renderBlocks (1) stopper.');
@@ -244,7 +244,7 @@ Terminal.prototype.renderBlocks = function () {
 
       // Attempt to find a new stop location.
       while (indexes.indexOf(stop) > -1) {
-        stop = this.utils.randomNumberWithinRange(start + 1, this.columns);
+        stop = this.utils.pickRange(start + 1, this.columns);
 
         if (stopper++ === 20) {
           this.utils.warner('Terminal.prototype.renderBlocks (2) stopper.');
@@ -277,7 +277,7 @@ Terminal.prototype.renderWords = function () {
     const max = (this.rows * this.columns * 2) - this.words[i].length;
 
     while (true) {
-      random = this.utils.randomNumberWithinRange(0, max);
+      random = this.utils.pickRange(0, max);
 
       // Nothing is inside occupied on the first run through.
       if (i === 0) {
