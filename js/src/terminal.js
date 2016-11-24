@@ -17,27 +17,29 @@ function Terminal() {
   this.attempts   = 4;
   this.password   = '';
   this.difficulty = '';
+
+  // Initialize the block characters.
+  this.blocks = [
+    '<>',
+    '[]',
+    '{}',
+    '()'
+  ];
+
+  // Initialize the special characters.
+  // TODO: Include surrounding characters without creating
+  //       false positives on surrounding statements.
+  this.characters = [
+    ',',  '.',  '/',
+    '!',  '%',  '&',
+    '-',  '+',  '=',
+    '?',  '$',  '*',
+    '^',  ';',  ':',
+    '@',  '#',  '"',
+    '`',  '~',  '|',
+    '_',  '\'', '\\'
+  ];
 }
-
-/**
- * Pointer Converter
- *
- * Converts an integer to a hexadecimal string.
- *
- * @param  {Integer} pointer -- The pointer to convert.
- * @return {String}
- */
-Terminal.prototype.convertPointerToHexadecimal = function (pointer) {
-  // Convert to hexadecimal.
-  const convert = pointer.toString(16).toUpperCase();
-
-  // Grab the last three characters.
-  if (convert.length > 3) {
-    return convert.substring(convert.length - 3, convert.length);
-  }
-
-  return convert;
-};
 
 /**
  * Decrease
@@ -46,6 +48,11 @@ Terminal.prototype.convertPointerToHexadecimal = function (pointer) {
  */
 Terminal.prototype.decreaseAttempt = function () {
   this.setAttempts(this.getAttempts() - 1);
+};
+
+/**
+ *
+ */
 };
 
 /**
@@ -127,7 +134,7 @@ Terminal.prototype.generatePointers = function () {
   let pointers = [];
 
   for (let i = 0, loop = 0; i < (this.rows * 2); i++, loop++, pointer++) {
-    let convert = this.convertPointerToHexadecimal(pointer);
+    let convert = this.utils.convertPointerToHexadecimal(pointer);
 
     // Attach the ending character.
     if (loop === 0) {

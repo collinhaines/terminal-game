@@ -9,7 +9,7 @@
 /**
  * Constructor
  */
-function Visuals () {
+function Visuals() {
   this.utils    = '';
   this.terminal = '';
 }
@@ -329,6 +329,20 @@ Visuals.prototype.locateEnding = function ($element) {
 };
 
 /**
+ * Printer
+ *
+ * Writes text to the output column while deleting the upper-most `<p>` element
+ * to maintain visual appeal.
+ *
+ * @param {String} text -- The text to print.
+ */
+Visuals.prototype.print = function (text) {
+  $('<p>&gt;' + text + '</p>').insertBefore($('#results > p:eq(14)'));
+
+  $('#results > p:eq(0)').remove();
+};
+
+/**
  * Processor
  *
  * Processes the selected character(s) and determines what to do.
@@ -475,10 +489,6 @@ Visuals.prototype.showText = function ($element, text, index, interval) {
 /**
  * Accessors
  */
-Visuals.prototype.getRenderer = function () {
-  return this.renderer;
-};
-
 Visuals.prototype.getTerminal = function () {
   return this.terminal;
 };
@@ -490,10 +500,6 @@ Visuals.prototype.getUtils = function () {
 /**
  * Mutators
  */
-Visuals.prototype.setRenderer = function (renderer) {
-  this.renderer = renderer;
-};
-
 Visuals.prototype.setTerminal = function (terminal) {
   this.terminal = terminal;
 };

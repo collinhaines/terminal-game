@@ -18,6 +18,26 @@ function Utils() {
 }
 
 /**
+ * Pointer Converter
+ *
+ * Converts an integer to a hexadecimal string.
+ *
+ * @param  {Integer} pointer -- The pointer to convert.
+ * @return {String}
+ */
+Utils.prototype.convertPointerToHexadecimal = function (pointer) {
+  // Convert to hexadecimal.
+  const convert = pointer.toString(16).toUpperCase();
+
+  // Grab the last three characters.
+  if (convert.length > 3) {
+    return convert.substring(convert.length - 3, convert.length);
+  }
+
+  return convert;
+};
+
+/**
  * Render Helper
  *
  * Renders text on the board and increases the interval accordingly.
@@ -30,6 +50,20 @@ Utils.prototype.frontRender = function ($element, text) {
 
   this.increaseInterval(text.length * 30);
 };
+
+/**
+ * Determiner
+ *
+ * Determines if the given string has letters within it.
+ *
+ * @param  {String}  text -- The string to search.
+ * @return {Boolean}
+ */
+Utils.prototype.hasText = function (text) {
+  return text.match(/[a-z]/i) !== null;
+};
+
+/**
  * Interval Increase
  *
  * Increases the interval based on the given integer. The increase is within
