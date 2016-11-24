@@ -1,5 +1,5 @@
 /**
- * terminal.js v0.2.0
+ * terminal.js v0.3.0
  * Copyright (c) 2016. Collin Haines.
  * Licensed under MIT (https://github.com/collinhaines/terminal-game/blob/master/LICENSE)
  */
