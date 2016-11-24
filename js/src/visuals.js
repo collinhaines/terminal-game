@@ -360,7 +360,7 @@ Visuals.prototype.processInput = function () {
       this.terminal.replenishAttempts();
 
       // Replenish attempts, visually.
-      this.renderer.renderAttempts(this.terminal.getAttempts());
+      this.renderAttempts(this.terminal.getAttempts());
 
       // Alert the user on what just happened.
       output = 'Tries reset.';
@@ -403,8 +403,8 @@ Visuals.prototype.processInput = function () {
       output = 'Dud removed.';
     }
 
-    this.getRenderer().print($population.text().toUpperCase());
-    this.getRenderer().print(output);
+    this.print($population.text().toUpperCase());
+    this.print(output);
 
     // Remove just the multiple items of hover.
     $population.removeClass('is-hover');
@@ -419,8 +419,8 @@ Visuals.prototype.processInput = function () {
   if ($exact.is('[data-word]')) {
     if ($population.text() === password) {
       // TODO: Something better.
-      this.getRenderer().print($population.text().toUpperCase());
-      this.getRenderer().print('Entry granted.');
+      this.print($population.text().toUpperCase());
+      this.print('Entry granted.');
 
       $('.text span').off('click');
       $(document).off('keydown');
@@ -432,19 +432,33 @@ Visuals.prototype.processInput = function () {
       $('#attempts > .attempt:last-child').remove();
 
       // Render the output.
-      this.getRenderer().print($population.text().toUpperCase());
-      this.getRenderer().print('Entry denied.');
-      this.getRenderer().print('Likeness=' + this.determineLikeness($population.text()));
+      this.print($population.text().toUpperCase());
+      this.print('Entry denied.');
+      this.print('Likeness=' + this.determineLikeness($population.text()));
 
       // Player has failed to hack into the terminal.
       if (this.getTerminal().getAttempts() === 0) {
         // TODO: Something better.
-        this.getRenderer().print('Locked out.');
+        this.print('Locked out.');
 
         $('.text span').off('click');
         $(document).off('keydown');
       }
     }
+  }
+};
+
+/**
+ * Attempt Renderer
+ *
+ * Renders anywhere between 0 - 3 attempts, depending on whether
+ * the player has attempted to guess the password or not.
+ *
+ * @param {Integer} attempts -- The amount of attempts the user has.
+ */
+Visuals.prototype.renderAttempts = function (attempts) {
+  for (let i = $('#attempts > .attempt').length; i < attempts; i++) {
+    $('#attempts').append('<span class="attempt">&nbsp;</span>');
   }
 };
 
