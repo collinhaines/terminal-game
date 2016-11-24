@@ -82,9 +82,10 @@
     // Generate stuff.
     const ajax = $.ajax('words.json', { async: false });
 
-    terminal.setDifficulty(terminal.generateDifficulty());
-    terminal.setWords(terminal.generateWords(ajax.responseJSON));
-    terminal.setPassword(terminal.generatePassword());
+    terminal.generatePointers();
+    terminal.generateDifficulty();
+    terminal.generateWords(ajax.responseJSON);
+    terminal.generatePassword();
     terminal.generateBoard();
 
     // Render introduction text.
@@ -105,7 +106,7 @@
 
     // Render the four main columns.
     const board    = terminal.getBoard();
-    const pointers = terminal.generatePointers();
+    const pointers = terminal.getPointers();
 
     for (let i = 0; i < terminal.getRows(); i++) {
       // Render column 1.

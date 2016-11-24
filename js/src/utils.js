@@ -52,6 +52,32 @@ Utils.prototype.frontRender = function ($element, text) {
 };
 
 /**
+ * Pointer Generator
+ *
+ * Generates an initial pointer the board will start at.
+ *
+ * @return {Integer}
+ */
+Utils.prototype.generateInitialPointer = function () {
+  let pointer = 0;
+  let stopper = 0;
+
+  // If the pointer is below 256, the length of `.toString(16)` is 2.
+  // Why? Go to France around the year 770 and ask them.
+  while (pointer < 256) {
+    pointer = Math.floor(Math.random() * parseInt(Math.random().toString().substring(2, 6), 10));
+
+    if (stopper++ === 20) {
+      this.warner('Utils.prototype.generateInitialPointer stopper.');
+
+      break;
+    }
+  }
+
+  return pointer;
+};
+
+/**
  * Determiner
  *
  * Determines if the given string has letters within it.

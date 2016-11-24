@@ -22,6 +22,7 @@ function Terminal() {
   this.words      = [];
   this.attempts   = 4;
   this.password   = '';
+  this.pointers   = [];
   this.difficulty = '';
 
   // Initialize the block characters.
@@ -115,57 +116,28 @@ Terminal.prototype.generateBoard = function () {
  * Generates the difficulty by random.
  *
  * @todo More refined difficulty settings.
- * @return {String}
  */
 Terminal.prototype.generateDifficulty = function () {
   const type = Math.floor(Math.random() * 3);
 
   if (type === 0) {
-    return 'four';
+    this.setDifficulty('four');
   } else if (type === 1) {
-    return 'six';
+    this.setDifficulty('six');
   } else if (type === 2) {
-    return 'eight';
+    this.setDifficulty('eight');
   }
-};
-
-/**
- * Pointer Generator
- *
- * Generates an initial pointer the board will start at.
- *
- * @return {Integer}
- */
-Terminal.prototype.generateInitialPointer = function () {
-  let pointer = 0;
-  let stopper = 0;
-
-  // If the pointer is below 256, the length of `.toString(16)` is 2.
-  // Why? Go to France around the year 770 and ask them.
-  while (pointer < 256) {
-    pointer = Math.floor(Math.random() * parseInt(Math.random().toString().substring(2, 6), 10));
-
-    stopper++;
-
-    if (stopper === 20) {
-      this.utils.warner('Terminal.prototype.generateInitialPointer stopper.');
-
-      break;
-    }
-  }
-
-  return pointer;
 };
 
 /**
  * Password Generator
  *
  * Generates a password randomly from the set of words.
- *
- * @return {String}
  */
 Terminal.prototype.generatePassword = function () {
-  return this.words[this.utils.randomNumberWithinRange(0, this.words.length)];
+  const random = this.utils.randomNumberWithinRange(0, this.words.length);
+
+  this.setPassword(this.words[random]);
 };
 
 /**
@@ -184,7 +156,7 @@ Terminal.prototype.generatePassword = function () {
  */
 Terminal.prototype.generatePointers = function () {
   // Generate pointers
-  let pointer  = this.generateInitialPointer();
+  let pointer  = this.utils.generateInitialPointer();
   let pointers = [];
 
   for (let i = 0, loop = 0; i < (this.rows * 2); i++, loop++, pointer++) {
@@ -205,7 +177,7 @@ Terminal.prototype.generatePointers = function () {
     pointers.push('0x' + convert);
   }
 
-  return pointers;
+  this.setPointers(pointers);
 };
 
 /**
@@ -214,8 +186,7 @@ Terminal.prototype.generatePointers = function () {
  * Given a huge list of words, generate a random amount of words from
  * said given list.
  *
- * @param  {Object} response -- The JSON object from `words.json`.
- * @return {Array}
+ * @param {Object} response -- The JSON object from `words.json`.
  */
 Terminal.prototype.generateWords = function (response) {
   let words = [];
@@ -226,7 +197,7 @@ Terminal.prototype.generateWords = function (response) {
     words.push(response[this.difficulty][index]);
   }
 
-  return words;
+  this.setWords(words);
 };
 
 /**
@@ -401,6 +372,10 @@ Terminal.prototype.getPassword = function () {
   return this.password;
 };
 
+Terminal.prototype.getPointers = function () {
+  return this.pointers;
+};
+
 Terminal.prototype.getWords = function () {
   return this.words;
 };
@@ -418,6 +393,10 @@ Terminal.prototype.setDifficulty = function (difficulty) {
 
 Terminal.prototype.setPassword = function (password) {
   this.password = password;
+};
+
+Terminal.prototype.setPointers = function (pointers) {
+  this.pointers = pointers;
 };
 
 Terminal.prototype.setWords = function (words) {
