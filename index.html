@@ -148,6 +148,9 @@
       utils.increaseInterval($(this).data('text').length * 30);
     });
 
+    // Wait 10 milliseconds before rendering attempt blocks.
+    utils.increaseInterval(10);
+
     // Append the span after everything is done.
     setTimeout(function () {
       $('#information > p').last().append('<span id="attempts"></span>');
