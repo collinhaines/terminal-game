@@ -450,8 +450,6 @@ Visuals.prototype.processInput = function () {
  */
 Visuals.prototype.showText = function ($element, text, index, interval) {
   if (index > text.length) {
-    this.utils.logger('Completed rendering ' + text);
-
     return;
   }
 
