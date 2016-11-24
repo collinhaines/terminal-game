@@ -78,26 +78,21 @@ Terminal.prototype.generateBoard = function () {
   }
 
   // Generate word location.
-  let   count    = 0;
-  const location = this.renderWords(this.words, this.rows, this.columns);
+  const words = this.renderWords();
 
-  // Iterate through all playable words.
-  for (let key in location) {
-    let row    = Math.floor(key / this.columns);
-    let column = Math.floor(((key / this.columns) - row) * this.columns);
+  // Contents: start, stop
+  for (let i = 0; i < words.length; i++) {
+    let row = Math.floor(words[i][0] / this.columns);
+    let col = Math.floor(((words[i][0] / this.columns) - row) * this.columns);
 
-    // Iterate through where the words will be placed down at.
-    for (let i = 0; i < location[key]; i++, column++) {
-      // Advance to a new row when applicable.
-      if (column === 12) {
+    for (let x = 0; x < words[i][1]; x++, col++) {
+      if (col === 12) {
         row++;
-        column = 0;
+        col = 0;
       }
 
-      this.board[row][column] = this.words[count].charAt(i);
+      this.board[row][col] = this.words[i].charAt(x);
     }
-
-    count++;
   }
 
   // Generate character blocks.
@@ -268,72 +263,62 @@ Terminal.prototype.renderBlocks = function () {
  * @return {Array}
  */
 Terminal.prototype.renderWords = function () {
-  let occupied = {};
+  let output = [];
+  let random = 0;
 
-  for (let i = 0; i < this.words.length; i++) {
-    let random  = -1;
+  const total = (this.rows * this.columns * 2);
+
+  // Populate the first item.
+  random = this.utils.pickRange(0, total - this.words[0].length);
+  output.push([random, this.words[0].length]);
+
+  for (let i = 1; i < this.words.length; i++) {
     let stopper = 0;
 
-    const max = (this.rows * this.columns * 2) - this.words[i].length;
-
     while (true) {
-      random = this.utils.pickRange(0, max);
+      // Generate a random location on the board.
+      random = this.utils.pickRange(0, total - this.words[i].length);
 
-      // Nothing is inside occupied on the first run through.
-      if (i === 0) {
-        occupied[random] = this.words[i].length;
+      let prisoner = true;
 
-        break;
-      }
+      const currentMin = random + 1;
+      const currentMax = random + this.words[i].length + 1;
 
-      // Immediately try again if the same random number is generated.
-      if (occupied.hasOwnProperty(random)) {
-        continue;
-      }
+      for (let x = 0; x < output.length; x++) {
+        // Prevent same starting position.
+        if (output[x][0] === random) {
+          prisoner = true;
+          break;
+        }
 
-      let freeToGo = false;
-
-      // Determine if the number is within previously generated numbers.
-      for (let key in occupied) {
-        // Leave some character spacing between words.
-        const currentMin  = random + 1;
-        const currentMax  = random + this.words[i].length + 1;
-        const previousMin = parseInt(key, 10) - 1;
-        const previousMax = parseInt(key, 10) + parseInt(occupied[key], 10) + 1;
+        // Check if we'd be overwriting an already established word.
+        const previousMin = output[x][0] - 1;
+        const previousMax = output[x][0] + output[x][1] + 1;
 
         const isMinGood = previousMin <= currentMin && currentMin <= previousMax;
         const isMaxGood = previousMin <= currentMax && currentMax <= previousMax;
 
-        // Rather than checking if they current numbers are outside the range,
-        // check if the current numbers are within the range. This will assure
-        // that all previously occupied ranges are gone through.
         if (isMinGood || isMaxGood) {
-          freeToGo = false;
+          prisoner = true;
 
           break;
-        } else {
-          freeToGo = true;
         }
+
+        prisoner = false;
       }
 
-      // https://i.imgur.com/k4YYzDZ.jpg
-      if (freeToGo) {
-        occupied[random] = this.words[i].length;
-
-        break;
-      }
-
-      stopper++;
-
-      if (stopper === 20) {
-        this.utils.warner('Terminal.prototype.renderWords stopper.');
-
+      if (!prisoner) {
+        output.push([random, this.words[i].length]);
         break;
       }
     }
+
+    if (stopper++ === 20) {
+      this.utils.warner('Terminal.prototype.renderWords stopper.');
+    }
   }
 
-  return occupied;
+  return output;
 };
 
 /**
