@@ -116,13 +116,16 @@
     const tablets = ['iPad', 'Kindle', 'Kindle Fire'];
 
     // Alert tablet users the arrow functionality is "broken".
-    // There's probably a way to actually detect if an external keyboard is
-    // hooked up to a tablet.
+    // TODO: Detect if keyboard is connected to Tablet.
     if (tablets.indexOf(platform.product) > -1) {
-      $('<p>!! Warning !!</p><p>External Keyboard Not Found. Limited Usage Probable</p>').insertAfter($('#information > p:first-child'));
-    }
+      const $warning = $('<p data-text="!! Warning !!"></p>');
+      const $limited = $('<p data-text="External Keyboard Not Found. Limited Usage Probable."></p>');
 
+      $($warning + $limited).insertAfter($('#information > p:first-child'));
 
+      $('#information > p:eq(1), #information > p:eq(2)').each(function () {
+        utils.frontRender($(this), $(this).data('text'));
+      });
     }
   </script>
 </body>
