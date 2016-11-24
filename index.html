@@ -147,8 +147,10 @@
       }
     }
 
-    // Create event listeners.
-    visuals.attachEventListeners();
+    setTimeout(function () {
+      // Create event listeners.
+      visuals.attachEventListeners();
+    }, utils.getInterval());
 
     // TODO: Detect Android tablets.
     const tablets = ['iPad', 'Kindle', 'Kindle Fire'];
