@@ -93,7 +93,7 @@ Terminal.prototype.generateBoard = function () {
         col = 0;
       }
 
-      this.board[row][col]  = '<span data-word="' + words[i] + '">';
+      this.board[row][col]  = '<span data-word="' + this.words[i] + '">';
       this.board[row][col] += this.words[i].charAt(x) + '</span>';
     }
   }
