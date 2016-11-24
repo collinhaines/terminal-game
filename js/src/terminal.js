@@ -57,8 +57,56 @@ Terminal.prototype.decreaseAttempt = function () {
 };
 
 /**
+ * Board Generator
  *
+ * Generates an array-mirror of the board's content, complete
+ * with symbols, blocks, and words.
  */
+Terminal.prototype.generateBoard = function () {
+  // Generate initial symbols.
+  for (let i = 0; i < (this.rows * 2); i++) {
+    let symbols = [];
+
+    for (let i = 0; i < this.columns; i++) {
+      const random = this.utils.randomNumberWithinRange(0, this.characters.length);
+
+      symbols.push(this.characters[random]);
+    }
+
+    this.board.push(symbols);
+  }
+
+  // Generate word location.
+  let   count    = 0;
+  const location = this.renderWords(this.words, this.rows, this.columns);
+
+  // Iterate through all playable words.
+  for (let key in location) {
+    let row    = Math.floor(key / this.columns);
+    let column = Math.floor(((key / this.columns) - row) * this.columns);
+
+    // Iterate through where the words will be placed down at.
+    for (let i = 0; i < location[key]; i++, column++) {
+      // Advance to a new row when applicable.
+      if (column === 12) {
+        row++;
+        column = 0;
+      }
+
+      this.board[row][column] = this.words[count].charAt(i);
+    }
+
+    count++;
+  }
+
+  // Generate character blocks.
+  const blocks = this.renderBlocks();
+
+  // Contents: row, start, stop, block
+  for (let i = 0; i < blocks.length; i++) {
+    this.board[blocks[i][0]][blocks[i][1]] = this.blocks[blocks[i][3]].substring(0, 1);
+    this.board[blocks[i][0]][blocks[i][2]] = this.blocks[blocks[i][3]].substring(1, 2);
+  }
 };
 
 /**
@@ -182,6 +230,142 @@ Terminal.prototype.generateWords = function (response) {
 };
 
 /**
+ * Block Characters Renderer
+ *
+ * Following rule #3, this renders 1 to `n - 2` surrounding character blocks
+ * randomly within the board.
+ */
+Terminal.prototype.renderBlocks = function () {
+  let   output = [];
+  const total  = this.utils.randomNumberWithinRange(1, this.words.length - 2);
+
+  // Iterate through the amount of blocks.
+  for (let i = 0; i < total; i++) {
+    let start = this.utils.randomNumberWithinRange(0, this.columns - 1);
+    let stop  = this.utils.randomNumberWithinRange(start + 1, this.columns);
+
+    const row   = this.utils.randomNumberWithinRange(0, (this.rows * 2));
+    const text  = this.board[row].join('');
+    const block = this.utils.randomNumberWithinRange(0, this.blocks.length);
+
+    if (this.utils.hasText(text)) {
+      let indexes = [];
+      let stopper = 0;
+
+      // Locate all letter indexes.
+      for (let x = 0; x < text.length; x++) {
+        if (this.utils.hasText(text.charAt(x))) {
+          indexes.push(x);
+        }
+      }
+
+      // Attempt to find a new start location.
+      while (indexes.indexOf(start) > -1 || indexes.indexOf(start + 1) > -1) {
+        start = this.utils.randomNumberWithinRange(0, this.columns - 1);
+
+        if (stopper++ === 20) {
+          this.utils.warner('Terminal.prototype.renderBlocks (1) stopper.');
+          break;
+        }
+      }
+
+      stopper = 0;
+
+      // Attempt to find a new stop location.
+      while (indexes.indexOf(stop) > -1) {
+        stop = this.utils.randomNumberWithinRange(start + 1, this.columns);
+
+        if (stopper++ === 20) {
+          this.utils.warner('Terminal.prototype.renderBlocks (2) stopper.');
+          break;
+        }
+      }
+    }
+
+    output.push([row, start, stop, block]);
+  }
+
+  return output;
+};
+
+/**
+ * Word Renderer
+ *
+ * Returns an integer-based location representing where the words
+ * will be rendered.
+ *
+ * @return {Array}
+ */
+Terminal.prototype.renderWords = function () {
+  let occupied = {};
+
+  for (let i = 0; i < this.words.length; i++) {
+    let random  = -1;
+    let stopper = 0;
+
+    const max = (this.rows * this.columns * 2) - this.words[i].length;
+
+    while (true) {
+      random = this.utils.randomNumberWithinRange(0, max);
+
+      // Nothing is inside occupied on the first run through.
+      if (i === 0) {
+        occupied[random] = this.words[i].length;
+
+        break;
+      }
+
+      // Immediately try again if the same random number is generated.
+      if (occupied.hasOwnProperty(random)) {
+        continue;
+      }
+
+      let freeToGo = false;
+
+      // Determine if the number is within previously generated numbers.
+      for (let key in occupied) {
+        // Leave some character spacing between words.
+        const currentMin  = random + 1;
+        const currentMax  = random + this.words[i].length + 1;
+        const previousMin = parseInt(key, 10) - 1;
+        const previousMax = parseInt(key, 10) + parseInt(occupied[key], 10) + 1;
+
+        const isMinGood = previousMin <= currentMin && currentMin <= previousMax;
+        const isMaxGood = previousMin <= currentMax && currentMax <= previousMax;
+
+        // Rather than checking if they current numbers are outside the range,
+        // check if the current numbers are within the range. This will assure
+        // that all previously occupied ranges are gone through.
+        if (isMinGood || isMaxGood) {
+          freeToGo = false;
+
+          break;
+        } else {
+          freeToGo = true;
+        }
+      }
+
+      // https://i.imgur.com/k4YYzDZ.jpg
+      if (freeToGo) {
+        occupied[random] = this.words[i].length;
+
+        break;
+      }
+
+      stopper++;
+
+      if (stopper === 20) {
+        this.utils.warner('Terminal.prototype.renderWords stopper.');
+
+        break;
+      }
+    }
+  }
+
+  return occupied;
+};
+
+/**
  * Replenisher
  *
  * Replenishes attempts to 4.
@@ -195,6 +379,10 @@ Terminal.prototype.replenishAttempts = function () {
  */
 Terminal.prototype.getAttempts = function () {
   return this.attempts;
+};
+
+Terminal.prototype.getBoard = function () {
+  return this.board;
 };
 
 Terminal.prototype.getColumns = function () {

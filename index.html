@@ -85,6 +85,7 @@
     terminal.setDifficulty(terminal.generateDifficulty());
     terminal.setWords(terminal.generateWords(ajax.responseJSON));
     terminal.setPassword(terminal.generatePassword());
+    terminal.generateBoard();
 
     // Render introduction text.
     $('#information > p[data-text]').each(function () {
@@ -102,12 +103,48 @@
       utils.increaseInterval(50);
     }
 
+    // Render the four main columns.
+    const board    = terminal.getBoard();
+    const pointers = terminal.generatePointers();
 
+    for (let i = 0; i < terminal.getRows(); i++) {
+      // Render column 1.
+      $('#pointer-1').append('<span></span>');
+      utils.frontRender($('#pointer-1 > span').eq(i), pointers[i]);
 
+      // Render column 2.
+      $('#text-1').append('<div></div>');
+      let $row = $('#text-1 > div').eq(i);
 
+      for (let x = 0; x < terminal.getColumns(); x++) {
+        $row.append('<span></span>');
+        utils.frontRender($row.find('span').eq(x), board[i][x]);
+      }
 
+      // Render column 3.
+      $('#pointer-2').append('<span></span>');
+      utils.frontRender($('#pointer-2 > span').eq(i), pointers[i + terminal.getRows()]);
 
+      // Render column 4.
+      $('#text-2').append('<div></div>');
+      $row = $('#text-2 > div').eq(i);
 
+      for (let x = 0; x < terminal.getColumns(); x++) {
+        $row.append('<span></span>');
+        utils.frontRender($row.find('span').eq(x), board[i + terminal.getRows()][x]);
+      }
+    }
+
+    // Generate Output Area
+    for (let i = 0; i < terminal.getRows(); i++) {
+      if (i + 1 === terminal.getRows()) {
+        setTimeout(function () {
+          $('#results').append('<p>&gt;<span class="entry" id="entry"></span></p>');
+        }, utils.getInterval());
+      } else {
+        $('#results').append('<p>&nbsp;</p>');
+      }
+    }
 
     // Create event listeners.
     visuals.attachEventListeners();
