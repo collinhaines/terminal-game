@@ -67,21 +67,16 @@
     const visuals  = new Visuals();
     const terminal = new Terminal();
 
-    utils.logger('Mapping classes together.');
-
     // Attach exterior classes.
     terminal.setUtils(utils);
 
     visuals.setTerminal(terminal);
     visuals.setUtils(utils);
 
-    utils.logger('Generating difficulty.');
-
     terminal.setDifficulty(terminal.generateDifficulty());
 
 
 
-    utils.logger('Generating words.');
 
     // Generate words.
     const ajax = $.ajax({
@@ -91,21 +86,16 @@
 
     terminal.setWords(terminal.generateWords(ajax.responseJSON));
 
-    utils.logger('Generating password.');
 
     // Generate the password.
     terminal.setPassword(terminal.generatePassword());
 
-    utils.logger('Rendering words.');
 
 
-    utils.logger('Rendering character blocks.');
 
 
-    utils.logger('Rendering output column.');
 
 
-    utils.logger('Attaching event listeners.');
 
     // Create event listeners.
     visuals.attachEventListeners();
@@ -122,8 +112,6 @@
 
     // Render introduction text.
     $('#information > p').each(function () {
-      utils.logger('Showing text ' + $(this).data('text'));
-
       visuals.showText($(this), $(this).data('text'), 0, utils.getInterval());
 
       utils.increaseInterval($(this).data('text').length * 30);
