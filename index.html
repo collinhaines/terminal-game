@@ -118,8 +118,16 @@
       let $row = $('#text-1 > div').eq(i);
 
       for (let x = 0; x < terminal.getColumns(); x++) {
-        $row.append('<span></span>');
-        utils.frontRender($row.find('span').eq(x), board[i][x]);
+        // Grab the element.
+        const $temp = $(board[i][x]);
+        const text  = $temp.text();
+
+        // Remove the interior.
+        $temp.text('');
+        $row.append($temp);
+
+        // Render it when ready.
+        utils.frontRender($temp, text);
       }
 
       // Render column 3.
@@ -131,8 +139,16 @@
       $row = $('#text-2 > div').eq(i);
 
       for (let x = 0; x < terminal.getColumns(); x++) {
-        $row.append('<span></span>');
-        utils.frontRender($row.find('span').eq(x), board[i + terminal.getRows()][x]);
+        // Grab the element.
+        const $temp = $(board[i + terminal.getRows()][x]);
+        const text  = $temp.text();
+
+        // Remove the interior.
+        $temp.text('');
+        $row.append($temp);
+
+        // Render it when ready.
+        utils.frontRender($temp, text);
       }
     }
 

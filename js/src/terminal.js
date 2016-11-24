@@ -71,7 +71,7 @@ Terminal.prototype.generateBoard = function () {
     for (let i = 0; i < this.columns; i++) {
       const random = this.utils.pickRange(0, this.characters.length);
 
-      symbols.push(this.characters[random]);
+      symbols.push('<span>' + this.characters[random] + '</span>');
     }
 
     this.board.push(symbols);
@@ -91,7 +91,8 @@ Terminal.prototype.generateBoard = function () {
         col = 0;
       }
 
-      this.board[row][col] = this.words[i].charAt(x);
+      this.board[row][col]  = '<span data-word="' + words[i] + '">';
+      this.board[row][col] += this.words[i].charAt(x) + '</span>';
     }
   }
 
@@ -100,8 +101,19 @@ Terminal.prototype.generateBoard = function () {
 
   // Contents: row, start, stop, block
   for (let i = 0; i < blocks.length; i++) {
-    this.board[blocks[i][0]][blocks[i][1]] = this.blocks[blocks[i][3]].substring(0, 1);
-    this.board[blocks[i][0]][blocks[i][2]] = this.blocks[blocks[i][3]].substring(1, 2);
+    this.board[blocks[i][0]][blocks[i][1]] = '<span>';
+
+    if (i === 0) {
+      // Attach [data-replenishes] attribute.
+      this.board[blocks[i][0]][blocks[i][1]] = '<span data-replenishes="true">';
+    }
+
+    this.board[blocks[i][0]][blocks[i][1]] += this.blocks[blocks[i][3]].substring(0, 1);
+    this.board[blocks[i][0]][blocks[i][1]] += '</span>';
+
+    this.board[blocks[i][0]][blocks[i][2]]  = '<span>';
+    this.board[blocks[i][0]][blocks[i][2]] += this.blocks[blocks[i][3]].substring(1, 2);
+    this.board[blocks[i][0]][blocks[i][2]] += '</span>';
   }
 };
 
