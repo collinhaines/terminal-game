@@ -220,10 +220,7 @@ module.exports = function (grunt) {
     'less',
 
     // Execute the JavaScript file workflow.
-    'scripts',
-
-    // Clean out temp JavaScript.
-    'clean:temp'
+    'scripts'
   ]);
 
   // Workflow for JavaScript files.
