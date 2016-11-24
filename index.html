@@ -65,34 +65,21 @@
     // Construct.
     const utils    = new Utils();
     const visuals  = new Visuals();
-    const renderer = new Renderer();
     const terminal = new Terminal();
 
     utils.logger('Mapping classes together.');
 
     // Attach exterior classes.
-    renderer.setUtils(utils);
-
     terminal.setUtils(utils);
 
     visuals.setTerminal(terminal);
-    visuals.setRenderer(renderer);
     visuals.setUtils(utils);
 
     utils.logger('Generating difficulty.');
 
     terminal.setDifficulty(terminal.generateDifficulty());
 
-    utils.logger('Rendering pointers.');
 
-    // Render the pointers.
-    renderer.renderPointers(terminal.generatePointers());
-
-    utils.logger('Rendering characters.');
-
-    // Render characters.
-    renderer.renderCharacters($('#text-1'), terminal.getRows(), terminal.getColumns());
-    renderer.renderCharacters($('#text-2'), terminal.getRows(), terminal.getColumns());
 
     utils.logger('Generating words.');
 
@@ -111,18 +98,12 @@
 
     utils.logger('Rendering words.');
 
-    // Render the words on the board.
-    renderer.renderWords(terminal.getWords(), terminal.getRows(), terminal.getColumns());
 
     utils.logger('Rendering character blocks.');
 
-    // Render the surrounding characters.
-    renderer.renderSurrounders(terminal.getWords(), terminal.getRows(), terminal.getColumns());
 
     utils.logger('Rendering output column.');
 
-    // Render the output to the side of the board.
-    renderer.renderOutput(terminal.getRows());
 
     utils.logger('Attaching event listeners.');
 

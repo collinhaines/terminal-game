@@ -11,7 +11,6 @@
  */
 function Visuals () {
   this.utils    = '';
-  this.renderer = '';
   this.terminal = '';
 }
 
