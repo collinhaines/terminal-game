@@ -10,6 +10,10 @@
  * Constructor
  */
 function Utils() {
+  // Class
+  this.visuals = '';
+
+  // Dynamic
   this.interval = 0;
 }
 
@@ -70,6 +74,10 @@ Utils.prototype.getInterval = function () {
  */
 Utils.prototype.setInterval = function (interval) {
   this.interval = interval;
+};
+
+Utils.prototype.setVisuals = function (visuals) {
+  this.visuals = visuals;
 };
 
 module.exports = Utils;
