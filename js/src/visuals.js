@@ -250,7 +250,7 @@ Visuals.prototype.getPopulation = function ($element) {
   if (this.isBeginningBracket($element) && $element.attr('data-skip') === undefined) {
     return this.locateEnding($element);
   } else if ($element.is('[data-word]')) {
-    return $('span[data-word="' + $element.attr('data-word') + '"]');
+    return $('span[data-word="' + $element.data('word') + '"]');
   } else {
     return $element;
   }

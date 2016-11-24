@@ -80,12 +80,14 @@ Terminal.prototype.generateBoard = function () {
   // Generate word location.
   const words = this.renderWords();
 
-  // Contents: start, stop
+  // Contents: position, length
   for (let i = 0; i < words.length; i++) {
-    let row = Math.floor(words[i][0] / this.columns);
-    let col = Math.floor(((words[i][0] / this.columns) - row) * this.columns);
+    let div = words[i][0] / this.columns;
+    let row = Math.floor(div);
+    let col = Math.floor((div - row) * this.columns);
 
     for (let x = 0; x < words[i][1]; x++, col++) {
+      // Start on the next row if we hit the end of the column.
       if (col === 12) {
         row++;
         col = 0;
