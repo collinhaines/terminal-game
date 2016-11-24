@@ -10,10 +10,16 @@
  * Constructor
  */
 function Terminal() {
-  this.rows       = 16;
-  this.utils      = '';
+  // Class
+  this.utils = '';
+
+  // Static
+  this.rows    = 16;
+  this.columns = 12;
+
+  // Dynamic
+  this.board      = [];
   this.words      = [];
-  this.columns    = 12;
   this.attempts   = 4;
   this.password   = '';
   this.difficulty = '';
