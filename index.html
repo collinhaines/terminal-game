@@ -73,23 +73,19 @@
     visuals.setTerminal(terminal);
     visuals.setUtils(utils);
 
-    terminal.setDifficulty(terminal.generateDifficulty());
-
     utils.setVisuals(visuals);
 
+    // Generate stuff.
+    const ajax = $.ajax('words.json', { async: false });
 
+    terminal.setDifficulty(terminal.generateDifficulty());
+    terminal.setWords(terminal.generateWords(ajax.responseJSON));
+    terminal.setPassword(terminal.generatePassword());
 
-    // Generate words.
-    const ajax = $.ajax({
-      async: false,
-      url:   'words.json'
     });
 
-    terminal.setWords(terminal.generateWords(ajax.responseJSON));
 
 
-    // Generate the password.
-    terminal.setPassword(terminal.generatePassword());
 
 
 
