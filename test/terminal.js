@@ -1,5 +1,5 @@
 /**
- * terminal.js v0.2.0
+ * terminal.js v0.3.0
  * Copyright (c) 2016. Collin Haines.
  * Licensed under MIT (https://github.com/collinhaines/terminal-game/blob/master/LICENSE)
  */
@@ -54,7 +54,7 @@ describe('Terminal', () => {
 
   describe('password', () => {
     it('is now randomly generated', () => {
-      terminal.setDifficulty(terminal.generateDifficulty());
+      terminal.generateDifficulty();
 
       chai.assert.oneOf(terminal.getDifficulty(), ['four', 'six', 'eight']);
     });
@@ -70,7 +70,7 @@ describe('Terminal', () => {
     it('has words now', () => {
       const response = JSON.parse(require('fs').readFileSync(require('path').resolve(__dirname, '../words.json')).toString());
 
-      terminal.setWords(terminal.generateWords(response));
+      terminal.generateWords(response);
 
       chai.assert.notEqual(0, terminal.getWords().length);
     });
