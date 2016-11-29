@@ -13,6 +13,9 @@ function Visuals() {
   // Class
   this.utils    = '';
   this.terminal = '';
+
+  // Dynamic
+  this.timeout = '';
 }
 
 /**
@@ -275,7 +278,8 @@ Visuals.prototype.highlightAdd = function ($element) {
   $population.addClass('is-hover');
 
   // Alert the entry of new text.
-  $('#entry').html($population.text());
+  clearTimeout(this.timeout);
+  this.showText($('#entry'), $population.text(), 0, 0);
 };
 
 /**
@@ -293,6 +297,7 @@ Visuals.prototype.highlightRemove = function ($element) {
   $('.text span.is-hover').removeClass('is-hover');
 
   // Even... even the entry.
+  clearTimeout(this.timeout);
   $('#entry').html('');
 };
 
@@ -492,7 +497,7 @@ Visuals.prototype.showText = function ($element, text, index, interval) {
 
   // The append must be inside for the initial calls.
   // This way the index does not have three billion callbacks.
-  setTimeout(function () {
+  this.timeout = setTimeout(function () {
     $element.append(text.charAt(index++));
 
     self.showText($element, text, index);
