@@ -338,7 +338,7 @@ Visuals.prototype.locateEnding = function ($element) {
  * @param {String} text -- The text to print.
  */
 Visuals.prototype.print = function (text) {
-  $('<p>&gt;' + text + '</p>').insertBefore($('#results > p:eq(14)'));
+  $('<p>&gt;' + text + '</p>').insertBefore($('#results > p:eq(15)'));
 
   $('#results > p:eq(0)').remove();
 };
