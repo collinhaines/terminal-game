@@ -105,7 +105,7 @@ Utils.prototype.increaseInterval = function (increase) {
  * Logger
  *
  * @param  {String} text -- Text to log.
- * @return {Console}
+ * @return {Object}
  */
 Utils.prototype.logger = function (text) {
   return console.log('[' + new Date().toLocaleString() + '] => ' + text);
@@ -128,7 +128,7 @@ Utils.prototype.pickRange = function (min, max) {
  * Same as the logger, just throws a warning.
  *
  * @param  {String} text -- Text to log.
- * @return {Console}
+ * @return {Object}
  */
 Utils.prototype.warner = function (text) {
   return console.warn('[' + new Date().toLocaleString() + '] => ' + text);

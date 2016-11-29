@@ -10,6 +10,7 @@
  * Constructor
  */
 function Visuals() {
+  // Class
   this.utils    = '';
   this.terminal = '';
 }
@@ -385,9 +386,7 @@ Visuals.prototype.processInput = function () {
           break;
         }
 
-        stopper++;
-
-        if (stopper === 20) {
+        if (stopper++ === 20) {
           this.utils.warner('Visuals.prototype.processInput stopper.');
 
           break;
