@@ -54,7 +54,7 @@ function Terminal() {
  * Decreases attempts by 1.
  */
 Terminal.prototype.decreaseAttempt = function () {
-  this.setAttempts(this.getAttempts() - 1);
+  this.attempts = this.attempts - 1;
 };
 
 /**
@@ -130,11 +130,11 @@ Terminal.prototype.generateDifficulty = function () {
   const type = Math.floor(Math.random() * 3);
 
   if (type === 0) {
-    this.setDifficulty('four');
+    this.difficulty = 'four';
   } else if (type === 1) {
-    this.setDifficulty('six');
+    this.difficulty = 'six';
   } else if (type === 2) {
-    this.setDifficulty('eight');
+    this.difficulty = 'eight';
   }
 };
 
@@ -146,7 +146,7 @@ Terminal.prototype.generateDifficulty = function () {
 Terminal.prototype.generatePassword = function () {
   const random = this.utils.pickRange(0, this.words.length);
 
-  this.setPassword(this.words[random]);
+  this.password = this.words[random];
 };
 
 /**
@@ -186,7 +186,7 @@ Terminal.prototype.generatePointers = function () {
     pointers.push('0x' + convert);
   }
 
-  this.setPointers(pointers);
+  this.pointers = pointers;
 };
 
 /**
@@ -206,7 +206,7 @@ Terminal.prototype.generateWords = function (response) {
     words.push(response[this.difficulty][index]);
   }
 
-  this.setWords(words);
+  this.words = words;
 };
 
 /**
@@ -341,7 +341,7 @@ Terminal.prototype.renderWords = function () {
  * Replenishes attempts to 4.
  */
 Terminal.prototype.replenishAttempts = function () {
-  this.setAttempts(4);
+  this.attempts = 4;
 };
 
 /**
@@ -382,22 +382,6 @@ Terminal.prototype.getWords = function () {
 /**
  * Mutators
  */
-Terminal.prototype.setAttempts = function (attempts) {
-  this.attempts = attempts;
-};
-
-Terminal.prototype.setDifficulty = function (difficulty) {
-  this.difficulty = difficulty;
-};
-
-Terminal.prototype.setPassword = function (password) {
-  this.password = password;
-};
-
-Terminal.prototype.setPointers = function (pointers) {
-  this.pointers = pointers;
-};
-
 Terminal.prototype.setWords = function (words) {
   this.words = words;
 };

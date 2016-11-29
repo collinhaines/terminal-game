@@ -179,7 +179,7 @@ Visuals.prototype.attachEventListeners = function () {
  */
 Visuals.prototype.determineLikeness = function (text) {
   let   likeness = 0;
-  const password = this.getTerminal().getPassword();
+  const password = this.terminal.getPassword();
 
   for (let i = 0; i < text.length; i++) {
     if (text.charAt(i) === password.charAt(i)) {
@@ -426,7 +426,7 @@ Visuals.prototype.processInput = function () {
       $(document).off('keydown');
     } else {
       // Decrease attempts, internally.
-      this.getTerminal().decreaseAttempt();
+      this.terminal.decreaseAttempt();
 
       // Decrease attempts, visually.
       $('#attempts > .attempt:last-child').remove();
@@ -437,7 +437,7 @@ Visuals.prototype.processInput = function () {
       this.print('Likeness=' + this.determineLikeness($population.text()));
 
       // Player has failed to hack into the terminal.
-      if (this.getTerminal().getAttempts() === 0) {
+      if (this.terminal.getAttempts() === 0) {
         // TODO: Something better.
         this.print('Locked out.');
 
@@ -498,17 +498,6 @@ Visuals.prototype.showText = function ($element, text, index, interval) {
 
     self.showText($element, text, index);
   }, interval);
-};
-
-/**
- * Accessors
- */
-Visuals.prototype.getTerminal = function () {
-  return this.terminal;
-};
-
-Visuals.prototype.getUtils = function () {
-  return this.utils;
 };
 
 /**

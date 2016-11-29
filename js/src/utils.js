@@ -98,7 +98,7 @@ Utils.prototype.hasText = function (text) {
  * @param {Integer} increase -- How much to increase.
  */
 Utils.prototype.increaseInterval = function (increase) {
-  this.setInterval(this.getInterval() + (increase));
+  this.interval = this.interval + (increase);
 };
 
 /**
@@ -144,10 +144,6 @@ Utils.prototype.getInterval = function () {
 /**
  * Mutators
  */
-Utils.prototype.setInterval = function (interval) {
-  this.interval = interval;
-};
-
 Utils.prototype.setVisuals = function (visuals) {
   this.visuals = visuals;
 };

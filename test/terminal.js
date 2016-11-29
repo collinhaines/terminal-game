@@ -76,7 +76,7 @@ describe('Terminal', () => {
     });
 
     it('has password now', () => {
-      terminal.setPassword(terminal.generatePassword());
+      terminal.generatePassword();
 
       chai.assert.notEqual('', terminal.getPassword());
     });
