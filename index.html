@@ -69,120 +69,36 @@
     // Construct.
     const utils    = new Utils();
     const visuals  = new Visuals();
+    const renderer = new Renderer();
     const terminal = new Terminal();
 
     // Attach exterior classes.
-    terminal.setUtils(utils);
+    utils.setVisuals(visuals);
 
     visuals.setTerminal(terminal);
     visuals.setUtils(utils);
 
-    utils.setVisuals(visuals);
+    renderer.setUtils(utils);
+
+    terminal.setUtils(utils);
 
     // Generate stuff.
-    const ajax = $.ajax('words.json', { async: false });
-
     terminal.generatePointers();
     terminal.generateDifficulty();
-    terminal.generateWords(ajax.responseJSON);
+    terminal.generateWords($.ajax('words.json', { async: false }).responseJSON);
     terminal.generatePassword();
     terminal.generateBoard();
 
-    // Render introduction text.
-    $('#information > p[data-text]').each(function () {
-      utils.frontRender($(this), $(this).data('text'));
-    });
+    // Render stuff.
+    renderer.renderInformation(platform);
+    renderer.renderAttempts();
+    renderer.renderBoard(terminal.getBoard(), terminal.getPointers(), terminal.getRows(), terminal.getColumns());
+    renderer.renderResults(terminal.getRows());
 
-    utils.frontRender($('#info-attempt > span[data-text]'), $('#info-attempt > span[data-text]').data('text'));
-
-    // Render the attempts.
-    for (let i = 0; i < 4; i++) {
-      setTimeout(function () {
-        $('#attempts').append('<span class="attempt">&nbsp;</span>');
-      }, utils.getInterval());
-
-      utils.increaseInterval(50);
-    }
-
-    // Render the four main columns.
-    const board    = terminal.getBoard();
-    const pointers = terminal.getPointers();
-
-    for (let i = 0; i < terminal.getRows(); i++) {
-      // Render column 1.
-      $('#pointer-1').append('<span></span>');
-      utils.frontRender($('#pointer-1 > span').eq(i), pointers[i]);
-
-      // Render column 2.
-      $('#text-1').append('<div></div>');
-      let $row = $('#text-1 > div').eq(i);
-
-      for (let x = 0; x < terminal.getColumns(); x++) {
-        // Grab the element.
-        const $temp = $(board[i][x]);
-        const text  = $temp.text();
-
-        // Remove the interior.
-        $temp.text('');
-        $row.append($temp);
-
-        // Render it when ready.
-        utils.frontRender($temp, text);
-      }
-
-      // Render column 3.
-      $('#pointer-2').append('<span></span>');
-      utils.frontRender($('#pointer-2 > span').eq(i), pointers[i + terminal.getRows()]);
-
-      // Render column 4.
-      $('#text-2').append('<div></div>');
-      $row = $('#text-2 > div').eq(i);
-
-      for (let x = 0; x < terminal.getColumns(); x++) {
-        // Grab the element.
-        const $temp = $(board[i + terminal.getRows()][x]);
-        const text  = $temp.text();
-
-        // Remove the interior.
-        $temp.text('');
-        $row.append($temp);
-
-        // Render it when ready.
-        utils.frontRender($temp, text);
-      }
-    }
-
-    // Generate Output Area
-    for (let i = 0; i < terminal.getRows(); i++) {
-      if (i + 1 === terminal.getRows()) {
-        setTimeout(function () {
-          $('#results').append('<p>&gt;<span class="entry" id="entry"></span></p>');
-        }, utils.getInterval());
-      } else {
-        $('#results').append('<p>&nbsp;</p>');
-      }
-    }
-
+    // Create event listeners.
     setTimeout(function () {
-      // Create event listeners.
       visuals.attachEventListeners();
     }, utils.getInterval());
-
-    // TODO: Detect Android tablets.
-    const tablets = ['iPad', 'Kindle', 'Kindle Fire'];
-
-    // Alert tablet users the arrow functionality is "broken".
-    // TODO: Detect if keyboard is connected to Tablet.
-    if (tablets.indexOf(platform.product) > -1) {
-      const $warning = $('<p data-text="!! Warning !!"></p>');
-      const $limited = $('<p data-text="External Keyboard Not Found. Limited Usage Probable."></p>');
-
-      $($warning + $limited).insertAfter($('#information > p:first-child'));
-
-      $('#information > p:eq(1), #information > p:eq(2)').each(function () {
-        utils.frontRender($(this), $(this).data('text'));
-      });
-    }
   </script>
 </body>
 </html>
